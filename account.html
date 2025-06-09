@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Beauty - My Account</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="login-bg">
+    <div id="app">
+        <!-- Loading Overlay -->
+        <div v-if="showOverlay" class="loading-overlay">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="index.html">BEST BEAUTY</a>
+            <div class="d-lg-none ms-auto navbar-icons">
+                <a :href="isLoggedIn ? 'account.html' : 'login.html'" class="icon-btn" title="Account"><i class="fa fa-user"></i></a>
+                <a href="cart.html" class="icon-btn position-relative" title="Cart">
+                    <i class="fa fa-shopping-bag"></i>
+                    <span class="cart-badge">{{ cartCount }}</span>
+                </a>
+            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav mx-auto navbar-center-links">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">Shop All</a>
+                    </li>
+                </ul>
+                <div class="navbar-icons d-none d-lg-flex ms-auto">
+                    <a :href="isLoggedIn ? 'account.html' : 'login.html'" class="icon-btn" title="Account"><i class="fa fa-user"></i></a>
+                    <a href="cart.html" class="icon-btn position-relative" title="Cart">
+                        <i class="fa fa-shopping-bag"></i>
+                        <span class="cart-badge">{{ cartCount }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="container py-5" style="padding-top: 100px;">
+        <div class="row justify-content-center">
+            <!-- Sidebar -->
+            <aside class="col-lg-3 mb-4">
+                <div class="filter-sidebar p-4 rounded-4 mb-4">
+                    <h5 class="sidebar-title mb-3">My Account</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="account.html" class="text-decoration-none" style="color:#b48ec7;"><i class="fa fa-user me-2"></i>Profile</a></li>
+                        <li class="mb-2"><a href="purchases.html" class="text-decoration-none" style="color:#b48ec7;"><i class="fa fa-shopping-bag me-2"></i>Order History</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none" style="color:#b48ec7;" @click="logout"><i class="fa fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </aside>
+            <!-- Account Info Card -->
+            <div class="col-lg-6">
+                <div class="login-card p-4 p-md-5 rounded-4 shadow-lg w-100">
+                    <h2 class="text-center mb-4 login-title">My Profile</h2>
+                    <div v-if="error" class="alert alert-danger">{{ error }}</div>
+                    <form @submit.prevent="saveProfile">
+                        <div class="mb-3">
+                            <label for="accountName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="accountName" v-model="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="accountEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="accountEmail" v-model="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="accountPassword" class="form-label">New Password</label>
+                            <div class="input-group">
+                                <input :type="showPassword ? 'text' : 'password'" class="form-control" id="accountPassword" v-model="password">
+                                <button class="btn btn-outline-secondary" type="button" @click="showPassword = !showPassword">
+                                    <i :class="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted">Leave blank to keep current password.</small>
+                        </div>
+                        <button type="submit" class="btn btn-dark w-100 mb-2" :disabled="loading">
+                          <span v-if="loading" class="spinner-border spinner-border-sm me-1"></span>
+                          {{ loading ? 'Saving...' : 'Save Changes' }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="footer mt-5 py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="text-uppercase mb-4">Join Our Community</h5>
+                    <p class="mb-4">Subscribe to our newsletter for exclusive offers and beauty tips.</p>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Enter your email" v-model="newsletterEmail">
+                        <button class="btn btn-dark" type="button" @click="subscribeNewsletter">Subscribe</button>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h5 class="text-uppercase mb-4">Quick Links</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Shipping Policy</a></li>
+                        <li><a href="#">Return Policy</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h5 class="text-uppercase mb-4">Follow Us</h5>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-pinterest"></i></a>
+                    </div>
+                    <div class="mt-4">
+                        <p class="mb-2">Customer Service:</p>
+                        <p class="mb-0">Email: support@bestbeauty.com</p>
+                        <p>Phone: (555) 123-4567</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <hr class="footer-divider">
+                    <p class="text-center mb-0">&copy; 2025 Best Beauty. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Supabase Initialization -->
+    <script>
+      const SUPABASE_URL = 'https://ltkylpxgrqpnfkxfmgpa.supabase.co';
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0a3lscHhncnFwbmZreGZtZ3BhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0MTM4MDAsImV4cCI6MjA2NDk4OTgwMH0.Gm2B87vmlA9XZDsEXOFHibu4z-hoR1Wu1a_yjpI77kc'; 
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    </script>
+    <!-- Vue App -->
+    <script>
+    const { createApp } = Vue;
+    createApp({
+        async created() {
+            const { data, error } = await supabase.auth.getUser();
+            if (!data?.user) {
+                window.location.href = 'login.html';
+            } else {
+                this.name = data?.user.user_metadata?.name || '';
+                this.email = data?.user.email || '';
+                this.isLoggedIn = true;
+                this.updateCartCount();
+                this.showOverlay = false;
+            }
+        },
+        data() {
+            return {
+                showOverlay: true,
+                name: '',
+                email: '',
+                password: '',
+                showPassword: false,
+                newsletterEmail: '',
+                loading: false,
+                error: null,
+                isLoggedIn: false,
+                cartCount: 0
+            }
+        },
+        methods: {
+            async saveProfile() {
+                this.loading = true;
+                this.error = null;
+
+                try {
+                    const updates = {
+                        ...(this.name && { data: { name: this.name } }),
+                        ...(this.password && { password: this.password })
+                    };
+
+                    if (Object.keys(updates).length) {
+                        const { error } = await supabase.auth.updateUser(updates);
+                        if (error) throw error;
+                        alert('Profile updated!');
+                        this.password = '';
+                    }
+                } catch (error) {
+                    this.error = error.message;
+                } finally {
+                    this.loading = false;
+                }
+            },            
+            updateCartCount() {
+                let cart = [];
+                try {
+                    cart = JSON.parse(localStorage.getItem('cart')) || [];
+                } catch (e) {}
+                this.cartCount = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+            },
+            async logout() {
+                localStorage.removeItem('rememberMe');
+                const { error } = await supabase.auth.signOut();
+                if (!error) {
+                    window.location.href = 'index.html';
+                }
+            },
+            subscribeNewsletter() {
+                if (this.newsletterEmail) {
+                    alert('Thank you for subscribing to our newsletter!');
+                    this.newsletterEmail = '';
+                } else {
+                    alert('Please enter your email address.');
+                }
+            }
+        }
+    }).mount('#app');
+    </script>
+</body>
+</html> 

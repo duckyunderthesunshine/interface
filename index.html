@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Beauty - Premium Makeup Collection</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Add to Cart Notification -->
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+            <div id="cartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">Item Added to Cart</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    {{ toastMessage }}
+                </div>
+            </div>
+        </div>
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" href="index.html">BEST BEAUTY</a>
+                <div class="d-lg-none ms-auto navbar-icons">
+                    <a :href="isLoggedIn ? 'account.html' : 'login.html'" class="icon-btn" title="Account"><i class="fa fa-user"></i></a>
+                    <a href="cart.html" class="icon-btn position-relative" title="Cart">
+                        <i class="fa fa-shopping-bag"></i>
+                        <span class="cart-badge">{{ cartCount }}</span>
+                    </a>
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                    <ul class="navbar-nav mx-auto navbar-center-links">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="products.html">Shop All</a>
+                        </li>
+                    </ul>
+                    <div class="navbar-icons d-none d-lg-flex ms-auto">
+                        <a :href="isLoggedIn ? 'account.html' : 'login.html'" class="icon-btn" title="Account"><i class="fa fa-user"></i></a>
+                        <a href="cart.html" class="icon-btn position-relative" title="Cart">
+                            <i class="fa fa-shopping-bag"></i>
+                            <span class="cart-badge">{{ cartCount }}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero-section position-relative">
+            <!-- Video Background -->
+            <video class="hero-bg-video" autoplay muted loop playsinline>
+                <source src="resources/video1.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="container hero-content position-relative">
+                <div class="row align-items-center min-vh-100">
+                    <div class="col-md-6">
+                        <h1 class="display-4 fw-bold">Discover Your Beauty</h1>
+                        <p class="lead">Premium makeup collection for the modern woman</p>
+                        <a href="#" class="btn btn-dark btn-lg">Shop Now</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- change later to something else -->
+        <!-- Featured Products -->
+        <section class="featured-products py-5">
+            <div class="container">
+                <h2 class="text-center mb-5">Featured Products</h2>
+                <div class="row">
+                    <div v-for="product in featuredProducts" :key="product.id" class="col-md-4 mb-4">
+                        <div class="card product-card">
+                            <img :src="product.image" class="card-img-top" :alt="product.name">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text price">{{ formatPrice(product.price) }}</p>
+                                <a href="#" class="btn btn-dark" @click.prevent="addToCart(product)">Add to Cart</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer mt-5 py-5">
+            <div class="container">
+                <div class="row">
+                    <!-- Newsletter -->
+                    <div class="col-lg-4 mb-4">
+                        <h5 class="text-uppercase mb-4">Join Our Community</h5>
+                        <p class="mb-4">Subscribe to our newsletter for exclusive offers and beauty tips.</p>
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" placeholder="Enter your email" v-model="newsletterEmail">
+                            <button class="btn btn-dark" type="button" @click="subscribeNewsletter">Subscribe</button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="col-lg-4 mb-4">
+                        <h5 class="text-uppercase mb-4">Quick Links</h5>
+                        <ul class="list-unstyled footer-links">
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Shipping Policy</a></li>
+                            <li><a href="#">Return Policy</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Social Media -->
+                    <div class="col-lg-4 mb-4">
+                        <h5 class="text-uppercase mb-4">Follow Us</h5>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-pinterest"></i></a>
+                        </div>
+                        <div class="mt-4">
+                            <p class="mb-2">Customer Service:</p>
+                            <p class="mb-0">Email: support@bestbeauty.com</p>
+                            <p>Phone: (555) 123-4567</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Copyright -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <hr class="footer-divider">
+                        <p class="text-center mb-0">&copy; 2025 Best Beauty. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Supabase Initialization -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      const SUPABASE_URL = 'https://ltkylpxgrqpnfkxfmgpa.supabase.co';
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0a3lscHhncnFwbmZreGZtZ3BhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0MTM4MDAsImV4cCI6MjA2NDk4OTgwMH0.Gm2B87vmlA9XZDsEXOFHibu4z-hoR1Wu1a_yjpI77kc';
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    </script>
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+    <script>
+    // Cart badge updater for non-Vue pages
+    function updateCartBadge() {
+        let cart = [];
+        try {
+            cart = JSON.parse(localStorage.getItem('cart')) || [];
+        } catch (e) {}
+        const count = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+        document.querySelectorAll('.cart-badge').forEach(badge => badge.textContent = count);
+    }
+    updateCartBadge();
+    </script>
+</body>
+</html> 

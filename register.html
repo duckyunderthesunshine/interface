@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Beauty - Register</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body class="login-bg">
+    <div id="app">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="index.html">BEST BEAUTY</a>
+            <div class="d-lg-none ms-auto navbar-icons">
+                <a :href="isLoggedIn ? 'account.html' : 'login.html'" class="icon-btn" title="Account"><i class="fa fa-user"></i></a>
+                <a href="cart.html" class="icon-btn position-relative" title="Cart">
+                    <i class="fa fa-shopping-bag"></i>
+                    <span class="cart-badge">{{ cartCount }}</span>
+                </a>
+            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav mx-auto navbar-center-links">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">Shop All</a>
+                    </li>
+                </ul>
+                <div class="navbar-icons d-none d-lg-flex ms-auto">
+                    <a :href="isLoggedIn ? 'account.html' : 'login.html'" class="icon-btn" title="Account"><i class="fa fa-user"></i></a>
+                    <a href="cart.html" class="icon-btn position-relative" title="Cart">
+                        <i class="fa fa-shopping-bag"></i>
+                        <span class="cart-badge">{{ cartCount }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="product-page-header">
+        <div class="header-overlay"></div>
+        <div class="container text-center position-relative">
+            <h1 class="header-title">Join Us!</h1>
+        </div>
+    </header>
+
+    <div class="d-flex align-items-center justify-content-center min-vh-100" style="padding-top: 80px;">
+        <div class="login-card p-4 p-md-5 rounded-4 shadow-lg w-100" style="max-width: 400px;">
+            <h2 class="text-center mb-4 login-title">Create Your <span class="brand-accent">Best Beauty</span> Account</h2>
+            <div v-if="error" class="alert alert-danger">{{ error }}</div>
+            <form @submit.prevent="register">
+                <div class="mb-3">
+                    <label for="registerName" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="registerName" v-model="name" required autocomplete="name">
+                </div>
+                <div class="mb-3">
+                    <label for="registerEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="registerEmail" v-model="email" required autocomplete="email">
+                </div>
+                <div class="mb-3">
+                    <label for="registerPassword" class="form-label">Password</label>
+                    <div class="input-group">
+                        <input :type="showPassword ? 'text' : 'password'" class="form-control" id="registerPassword" v-model="password" required autocomplete="new-password">
+                        <button class="btn btn-outline-secondary" type="button" @click="showPassword = !showPassword">
+                            <i :class="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="registerConfirmPassword" class="form-label">Confirm Password</label>
+                    <input :type="showPassword ? 'text' : 'password'" class="form-control" id="registerConfirmPassword" v-model="confirmPassword" required autocomplete="new-password">
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="agreeTerms" v-model="agreeTerms" required>
+                    <label class="form-check-label" for="agreeTerms">
+                        I agree to the <a href="#" style="color:#b48ec7;">terms and conditions</a>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-dark w-100 mb-2">Register</button>
+                <div class="text-center mt-3">
+                    <span class="small">Already have an account?</span>
+                    <a href="login.html" class="small text-decoration-none" style="color:#ffb5e8;">Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="footer mt-5 py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="text-uppercase mb-4">Join Our Community</h5>
+                    <p class="mb-4">Subscribe to our newsletter for exclusive offers and beauty tips.</p>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Enter your email" v-model="newsletterEmail">
+                        <button class="btn btn-dark" type="button" @click="subscribeNewsletter">Subscribe</button>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h5 class="text-uppercase mb-4">Quick Links</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Shipping Policy</a></li>
+                        <li><a href="#">Return Policy</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h5 class="text-uppercase mb-4">Follow Us</h5>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-pinterest"></i></a>
+                    </div>
+                    <div class="mt-4">
+                        <p class="mb-2">Customer Service:</p>
+                        <p class="mb-0">Email: support@bestbeauty.com</p>
+                        <p>Phone: (555) 123-4567</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <hr class="footer-divider">
+                    <p class="text-center mb-0">&copy; 2025 Best Beauty. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Vue App -->
+    <script>
+    // Initialize Supabase
+    const SUPABASE_URL = 'https://ltkylpxgrqpnfkxfmgpa.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0a3lscHhncnFwbmZreGZtZ3BhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0MTM4MDAsImV4cCI6MjA2NDk4OTgwMH0.Gm2B87vmlA9XZDsEXOFHibu4z-hoR1Wu1a_yjpI77kc';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const { createApp } = Vue;
+    createApp({
+        data() {
+            return {
+                showOverlay: true,
+                name: '',
+                email: '',
+                password: '',
+                confirmPassword: '',
+                showPassword: false,
+                agreeTerms: false,
+                newsletterEmail: '',
+                isLoggedIn: false,
+                cartCount: 0,
+                loading: false,
+                error: null
+            }
+        },
+        async created() {
+            const { data } = await supabase.auth.getUser();
+            this.isLoggedIn = !!data?.user;
+            if (this.isLoggedIn) {
+                // If user is already logged in, redirect them
+                window.location.href = 'account.html';
+            } else {
+                this.showOverlay = false;
+            }
+            this.updateCartCount();
+        },
+        methods: {
+            async register() {
+                this.loading = true;
+                this.error = null;
+
+                try {
+                    // Email validation regex
+                    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailPattern.test(this.email)) {
+                        alert('Please enter a valid email address.');
+                        return;
+                    }
+                    if (this.password !== this.confirmPassword) {
+                        alert('Passwords do not match!');
+                        return;
+                    }
+                    if (!this.agreeTerms) {
+                        alert('You must agree to the terms and conditions.');
+                        return;
+                    }
+                    
+                    const { data, error } = await supabase.auth.signUp({
+                        email: this.email,
+                        password: this.password,
+                        options: {
+                            data: { name: this.name }
+                        }
+                    });
+                
+                    if (error) throw error;
+                    alert('Registration successful!');
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    this.error = error.message;
+                } finally {
+                    this.loading = false;
+                }
+            },
+            updateCartCount() {
+                let cart = [];
+                try {
+                    cart = JSON.parse(localStorage.getItem('cart')) || [];
+                } catch (e) {}
+                this.cartCount = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+            },
+            subscribeNewsletter() {
+                if (this.newsletterEmail) {
+                    alert('Thank you for subscribing to our newsletter!');
+                    this.newsletterEmail = '';
+                } else {
+                    alert('Please enter your email address.');
+                }
+            }
+        }
+    }).mount('#app');
+    </script>
+</body>
+</html> 

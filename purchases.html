@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Beauty - My Purchases</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="login-bg">
+    <div id="app">
+        <!-- Loading Overlay -->
+        <div v-if="showOverlay" class="loading-overlay">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        <!-- Navbar (reuse from cart page) -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" href="index.html">BEST BEAUTY</a>
+                <div class="d-lg-none ms-auto navbar-icons">
+                    <a :href="isLoggedIn ? 'account.html' : 'login.html'" class="icon-btn" title="Account"><i class="fa fa-user"></i></a>
+                    <a href="cart.html" class="icon-btn position-relative" title="Cart">
+                        <i class="fa fa-shopping-bag"></i>
+                        <span class="cart-badge">{{ cartCount }}</span>
+                    </a>
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                    <ul class="navbar-nav mx-auto navbar-center-links">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="products.html">Shop All</a>
+                        </li>
+                    </ul>
+                    <div class="navbar-icons d-none d-lg-flex ms-auto">
+                        <a :href="isLoggedIn ? 'account.html' : 'login.html'" class="icon-btn" title="Account"><i class="fa fa-user"></i></a>
+                        <a href="cart.html" class="icon-btn position-relative" title="Cart">
+                            <i class="fa fa-shopping-bag"></i>
+                            <span class="cart-badge">{{ cartCount }}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="container py-5" style="padding-top: 100px;">
+            <div class="row justify-content-center">
+                <!-- Sidebar -->
+                <aside class="col-lg-3 mb-4">
+                    <div class="filter-sidebar p-4 rounded-4 mb-4">
+                        <h5 class="sidebar-title mb-3">My Account</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><a href="account.html" class="text-decoration-none" style="color:#b48ec7;"><i class="fa fa-user me-2"></i>Profile</a></li>
+                            <li class="mb-2"><a href="purchases.html" class="text-decoration-none" style="color:#b48ec7;"><i class="fa fa-shopping-bag me-2"></i>Order History</a></li>
+                            <li class="mb-2"><a href="#" class="text-decoration-none" style="color:#b48ec7;" @click="logout"><i class="fa fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </aside>
+                <div class="col-lg-9">
+                    <div class="login-card p-4 p-md-5 rounded-4 shadow-lg w-100">
+                        <h2 class="text-center mb-4 login-title">My Purchases</h2>
+                        <!-- Add/Edit Purchase Form -->
+                        <form @submit.prevent="savePurchase" class="mb-4">
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md-4">
+                                    <label class="form-label">Product Name</label>
+                                    <input type="text" class="form-control" v-model="form.name" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Price</label>
+                                    <input type="number" class="form-control" v-model.number="form.price" min="0" step="0.01" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Quantity</label>
+                                    <input type="number" class="form-control" v-model.number="form.quantity" min="1" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Date</label>
+                                    <input type="date" class="form-control" v-model="form.date" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-dark w-100">{{ editIndex === null ? 'Add' : 'Update' }}</button>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- Purchases Table -->
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template v-for="order in groupedPurchases" :key="order.id">
+                                        <tr class="order-header">
+                                            <td colspan="5" class="p-3">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span>Order on {{ order.date }}</span>
+                                                    <span class="fw-bold">Order Total: {{ formatPrice(order.total) }}</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr v-for="(item, itemIndex) in order.items" :key="item.id + '-' + itemIndex">
+                                            <td>{{ item.name }}</td>
+                                            <td>{{ formatPrice(item.price) }}</td>
+                                            <td>{{ item.quantity }}</td>
+                                            <td>{{ formatPrice(item.price * item.quantity) }}</td>
+                                            <td>
+                                                <button class="btn btn-outline-secondary btn-sm me-2" @click="editPurchase(item)"><i class="fa fa-edit"></i></button>
+                                                <button class="btn btn-outline-danger btn-sm" @click="deletePurchase(item)"><i class="fa fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div v-if="purchases.length === 0" class="text-center py-4">
+                            <p>No purchases yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer mt-5 py-5">
+            <div class="container">
+                <div class="row">
+                    <!-- Newsletter -->
+                    <div class="col-lg-4 mb-4">
+                        <h5 class="text-uppercase mb-4">Join Our Community</h5>
+                        <p class="mb-4">Subscribe to our newsletter for exclusive offers and beauty tips.</p>
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" placeholder="Enter your email" v-model="newsletterEmail">
+                            <button class="btn btn-dark" type="button" @click="subscribeNewsletter">Subscribe</button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="col-lg-4 mb-4">
+                        <h5 class="text-uppercase mb-4">Quick Links</h5>
+                        <ul class="list-unstyled footer-links">
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Shipping Policy</a></li>
+                            <li><a href="#">Return Policy</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Social Media -->
+                    <div class="col-lg-4 mb-4">
+                        <h5 class="text-uppercase mb-4">Follow Us</h5>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-pinterest"></i></a>
+                        </div>
+                        <div class="mt-4">
+                            <p class="mb-2">Customer Service:</p>
+                            <p class="mb-0">Email: support@bestbeauty.com</p>
+                            <p>Phone: (555) 123-4567</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Copyright -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <hr class="footer-divider">
+                        <p class="text-center mb-0">&copy; 2025 Best Beauty. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Supabase Initialization -->
+    <script>
+      const SUPABASE_URL = 'https://ltkylpxgrqpnfkxfmgpa.supabase.co';
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0a3lscHhncnFwbmZreGZtZ3BhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0MTM4MDAsImV4cCI6MjA2NDk4OTgwMH0.Gm2B87vmlA9XZDsEXOFHibu4z-hoR1Wu1a_yjpI77kc';
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    </script>
+    <!-- Vue App -->
+    <script>
+    const { createApp } = Vue;
+    createApp({
+        data() {
+            return {
+                purchases: JSON.parse(localStorage.getItem('purchases') || '[]'),
+                form: { name: '', price: '', quantity: 1, date: '' },
+                editIndex: null,
+                isLoggedIn: false,
+                selectedCurrency: localStorage.getItem('selectedCurrency') || 'USD',
+                currencyRates: {
+                    USD: 1,
+                    MYR: 4.7,
+                    GBP: 0.78,
+                    KRW: 1370,
+                    JPY: 157
+                },
+                newsletterEmail: '',
+                currencySymbols: {
+                    USD: '$',
+                    MYR: 'RM',
+                    GBP: '£',
+                    KRW: '₩',
+                    JPY: '¥'
+                },
+                cart: JSON.parse(localStorage.getItem('cart') || '[]'),
+                showOverlay: true
+            }
+        },
+        computed: {
+            cartCount() {
+                return this.cart.reduce((sum, item) => sum + item.quantity, 0);
+            },
+            groupedPurchases() {
+                const allPurchases = this.purchases || [];
+                const grouped = allPurchases.reduce((acc, p) => {
+                    // Legacy items or manually added items without an orderId get a unique one
+                    const orderId = p.orderId || `manual-${p.name}-${p.date}-${p.price}`; 
+                    
+                    if (!acc[orderId]) {
+                        acc[orderId] = {
+                            id: orderId,
+                            date: p.date,
+                            items: [],
+                            total: 0
+                        };
+                    }
+                    acc[orderId].items.push(p);
+                    acc[orderId].total += (p.price || 0) * (p.quantity || 0);
+                    return acc;
+                }, {});
+
+                // Convert to array and sort by date so newest orders are first
+                return Object.values(grouped).sort((a, b) => new Date(b.date) - new Date(a.date));
+            }
+        },
+        methods: {
+            formatPrice(price) {
+                const rate = this.currencyRates[this.selectedCurrency] || 1;
+                const symbol = this.currencySymbols[this.selectedCurrency] || '$';
+                let converted = price * rate;
+                if (this.selectedCurrency === 'KRW' || this.selectedCurrency === 'JPY') {
+                    converted = Math.round(converted);
+                } else {
+                    converted = converted.toFixed(2);
+                }
+                return `${symbol}${converted}`;
+            },
+            savePurchase() {
+                if (this.editIndex === null) {
+                    this.purchases.push({ ...this.form });
+                } else {
+                    this.purchases.splice(this.editIndex, 1, { ...this.form });
+                }
+                this.savePurchases();
+                this.resetForm();
+            },
+            editPurchase(item) {
+                const originalIndex = this.purchases.findIndex(p => p === item);
+                this.form = { ...item };
+                this.editIndex = originalIndex;
+            },
+            deletePurchase(item) {
+                if (confirm('Delete this purchase?')) {
+                    const originalIndex = this.purchases.findIndex(p => p === item);
+                    this.purchases.splice(originalIndex, 1);
+                    this.savePurchases();
+                    this.resetForm();
+                }
+            },
+            savePurchases() {
+                localStorage.setItem('purchases', JSON.stringify(this.purchases));
+            },
+            resetForm() {
+                this.form = { name: '', price: '', quantity: 1, date: '' };
+                this.editIndex = null;
+            },
+            async logout() {
+                localStorage.removeItem('rememberMe');
+                const { error } = await supabase.auth.signOut();
+                if (!error) {
+                    window.location.href = 'index.html';
+                }
+            },
+            subscribeNewsletter() {
+                if (this.newsletterEmail) {
+                    alert('Thank you for subscribing to our newsletter!');
+                    this.newsletterEmail = '';
+                } else {
+                    alert('Please enter your email address.');
+                }
+            }
+        },
+        watch: {
+            purchases: {
+                handler(newVal) {
+                    this.savePurchases();
+                },
+                deep: true
+            }
+        },
+        async created() {
+            const { data, error } = await supabase.auth.getUser();
+            if (!data?.user) {
+                window.location.href = 'login.html';
+                this.showOverlay = false;
+                return;
+            } else {
+                this.isLoggedIn = true;
+                this.showOverlay = false;
+            }
+        }
+    }).mount('#app');
+    </script>
+</body>
+</html> 
