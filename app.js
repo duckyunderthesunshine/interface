@@ -28,7 +28,7 @@ const app = createApp({
                 {
                     id: 1,
                     title: "The Ultimate Guide to a Flawless Foundation Base",
-                    date: "June 10, 2025",
+                    date: "1st April 2025",
                     excerpt: "Achieving that perfect, second-skin foundation finish is easier than you think. Follow our step-by-step guide...",
                     image: "https://gabrielcosmeticsinc.com/cdn/shop/articles/GC_Foundation_Tips_Tricks.jpeg?v=1595977610&width=1024",
                     link: "#"
@@ -36,7 +36,7 @@ const app = createApp({
                 {
                     id: 2,
                     title: "Pastel Eyeshadows: A Trend That's Here to Stay",
-                    date: "June 05, 2025",
+                    date: "1st April 2025",
                     excerpt: "From soft lavenders to minty greens, pastel eyeshadows are taking over. Learn how to wear this dreamy trend...",
                     image: "https://api.photon.aremedia.net.au/wp-content/uploads/sites/6/2020/06/PP-Main2.png?resize=720%2C405",
                     link: "#"
@@ -44,7 +44,7 @@ const app = createApp({
                 {
                     id: 3,
                     title: "5 Tips for Healthy, Glowing Skin This Summer",
-                    date: "May 28, 2025",
+                    date: "1st April 2025",
                     excerpt: "Keep your skin radiant and protected during the warmer months with these essential skincare tips from our experts.",
                     image: "https://www.dermaartsclinic.com/blog/wp-content/uploads/2024/09/How-to-Get-Glowing-Skin-Naturally.png",
                     link: "#"
