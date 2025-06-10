@@ -69,27 +69,86 @@
             <div class="container hero-content position-relative">
                 <div class="row align-items-center min-vh-100">
                     <div class="col-md-6">
-                        <h1 class="display-4 fw-bold">Discover Your Beauty</h1>
-                        <p class="lead">Premium makeup collection for the modern woman</p>
-                        <a href="#" class="btn btn-dark btn-lg">Shop Now</a>
+                        <h1 class="display-3 fw-bold">Elegance in Every Shade</h1>
+                        <p class="lead fs-4 mb-4">Discover curated cosmetics that celebrate your unique beauty.</p>
+                        <a href="products.html" class="btn btn-dark btn-lg">Shop The Collection</a>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- change later to something else -->
-        <!-- Featured Products -->
-        <section class="featured-products py-5">
-            <div class="container">
-                <h2 class="text-center mb-5">Featured Products</h2>
+        <!-- Shop by Category -->
+        <section class="shop-by-category py-5">
+            <div class="container text-center">
+                <h2 class="section-title mb-5">Shop by Category</h2>
                 <div class="row">
-                    <div v-for="product in featuredProducts" :key="product.id" class="col-md-4 mb-4">
-                        <div class="card product-card">
-                            <img :src="product.image" class="card-img-top" :alt="product.name">
+                    <div class="col-md-3 col-6 mb-4">
+                        <div class="category-card">
+                            <a href="products.html?category=Face">
+                                <img src="https://media.istockphoto.com/id/638948918/photo/woman-applying-tone-cream.jpg?s=612x612&w=0&k=20&c=9Pl5n9hOnLoO99n_5UpDS_3ezNoJeCWDUezJUyuOcyU=" alt="Face Products" class="img-fluid">
+                                <div class="category-card-overlay"><h3>Face</h3></div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-4">
+                        <div class="category-card">
+                            <a href="products.html?category=Eyes">
+                                <img src="https://i.pinimg.com/originals/4d/b1/ad/4db1ad3d167ac37ea54b8185a6acbefd.jpg" alt="Eye Products" class="img-fluid">
+                                <div class="category-card-overlay"><h3>Eyes</h3></div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-4">
+                        <div class="category-card">
+                            <a href="products.html?category=Lips">
+                                <img src="https://www.pinkdustcosmetics.com/cdn/shop/products/ScreenShot2021-10-11at6.51.12PM_2048x2048.png?v=1706018604" alt="Lip Products" class="img-fluid">
+                                <div class="category-card-overlay"><h3>Lips</h3></div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-4">
+                        <div class="category-card">
+                            <a href="products.html?category=Body">
+                                <img src="https://www.itcosmetics.com/on/demandware.static/-/Sites-itcosmetics-us-Library/default/dw22490fda/images/blog/ITBlog_body-makeup-foundation.jpg" alt="Body Products" class="img-fluid">
+                                <div class="category-card-overlay"><h3>Body</h3></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Our Philosophy -->
+        <section class="our-philosophy py-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 mb-4 mb-lg-0">
+                        <img src="https://cdn.shopify.com/s/files/1/0464/5139/2662/files/A9BBBD09-D865-49FC-9AEF-EA9B29BE304F.png?height=628&pad_color=fdfdfd&v=1614317533&width=1200" class="img-fluid rounded-4 shadow-lg">
+                    </div>
+                    <div class="col-lg-6 ps-lg-5">
+                        <h2 class="section-title mb-4">Pure, Playful, Personal.</h2>
+                        <p class="lead">At Best Beauty, we believe makeup is a form of self-expression and joy. Our products are crafted with the purest ingredients, designed to be gentle on your skin and our planet.</p>
+                        <p>We're committed to cruelty-free practices and sustainable sourcing, so you can feel good about the beauty you create. Explore our collections and find the perfect products to tell your unique story.</p>
+                        <a href="products.html" class="btn btn-dark">Explore the Collection</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Beauty Blog -->
+        <section class="beauty-blog py-5 bg-light-texture">
+            <div class="container">
+                <h2 class="section-title text-center mb-5">From Our Beauty Journal</h2>
+                <div class="row">
+                    <div v-for="post in blogPosts" :key="post.id" class="col-md-4 mb-4">
+                        <div class="card blog-post-card h-100">
+                            <img :src="post.image" class="card-img-top" :alt="post.title">
                             <div class="card-body">
-                                <h5 class="card-title">{{ product.name }}</h5>
-                                <p class="card-text price">{{ formatPrice(product.price) }}</p>
-                                <a href="#" class="btn btn-dark" @click.prevent="addToCart(product)">Add to Cart</a>
+                                <h5 class="card-title">{{ post.title }}</h5>
+                                <p class="card-text text-muted small mb-2">{{ post.date }}</p>
+                                <p class="card-text">{{ post.excerpt }}</p>
+                                <a :href="post.link" class="stretched-link">Read More</a>
                             </div>
                         </div>
                     </div>
