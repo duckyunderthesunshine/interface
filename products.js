@@ -51,7 +51,7 @@ const app = createApp({
                     name: "Ethereal Eyeshadow Palette",
                     price: 65.00,
                     image: "resources/ethereal_eyeshadow_palette.png",
-                    description: "A dreamy palette of pastel and shimmer shades for endless looks.",
+                    description: "A dreamy palette of neutral and shimmer shades for endless looks.",
                     category: "Eyes"
                 },
                 {
