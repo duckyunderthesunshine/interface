@@ -30,12 +30,14 @@ createApp({
     },
     computed: {
         cartTotal() {
-            return this.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            return this.cart.filter(item => item.selected).reduce((sum, item) => sum + item.price * item.quantity, 0);
         },
         cartCount() {
-            return this.cart.reduce((sum, item) => sum + item.quantity, 0);
+            return this.cart.filter(item => item.selected).reduce((sum, item) => sum + item.quantity, 0);
         },
         postageFee() {
+            // If no items are selected, postage is 0
+            if (!this.cart.some(item => item.selected)) return 0;
             // Base postage fee in USD
             const baseFee = 5;
             const rate = this.currencyRates[this.selectedCurrency] || 1;
@@ -48,7 +50,17 @@ createApp({
             return converted;
         },
         grandTotal() {
+            // If no items are selected, grand total is 0
+            if (!this.cart.some(item => item.selected)) return 0;
             return this.cartTotal + this.postageFee;
+        },
+        allSelected: {
+            get() {
+                return this.cart.length > 0 && this.cart.every(item => item.selected);
+            },
+            set(value) {
+                this.cart.forEach(item => { item.selected = value; });
+            }
         }
     },
     async created() {
@@ -56,7 +68,14 @@ createApp({
         this.isLoggedIn = !!data?.user;
         const storedCart = localStorage.getItem('cart');
         if (storedCart) {
-            this.cart = JSON.parse(storedCart);
+            // Ensure 'selected' is always present and reactive
+            const loaded = JSON.parse(storedCart);
+            this.cart = loaded.map(item => {
+                if (typeof item.selected === 'undefined') {
+                    item.selected = true;
+                }
+                return item;
+            });
         }
         const storedCurrency = localStorage.getItem('selectedCurrency');
         if (storedCurrency) {
@@ -101,28 +120,29 @@ createApp({
                 alert('Please enter your email address.');
             }
         },
+        toggleAllSelection() {
+            const value = !this.allSelected;
+            this.cart.forEach(item => { item.selected = value; });
+        },
         proceedToPurchase() {
-            if (this.cart.length === 0) {
-                alert("Your cart is empty.");
+            const selectedItems = this.cart.filter(item => item.selected);
+            if (selectedItems.length === 0) {
+                alert("Please select at least one item to purchase.");
                 return;
             }
-
             this.showOverlay = true;
-
             let purchases = JSON.parse(localStorage.getItem('purchases') || '[]');
             const orderId = 'order-' + Date.now(); // Unique ID for this order
             const today = new Date().toISOString().slice(0, 10);
-
-            const newOrderItems = this.cart.map(item => ({
+            const newOrderItems = selectedItems.map(item => ({
                 ...item,
                 orderId: orderId, // Tag each item with the same orderId
                 date: today
             }));
-            
-            // Add new order items to the beginning of the purchases array
             purchases.unshift(...newOrderItems);
             localStorage.setItem('purchases', JSON.stringify(purchases));
-            this.cart = []; // This will trigger the watcher to clear the cart in localStorage
+            // Remove only purchased items from cart
+            this.cart = this.cart.filter(item => !item.selected);
             window.location.href = 'purchases.html';
         }
     }
