@@ -14,7 +14,7 @@ const app = createApp({
             sortOption: 'newest',
             selectedCategory: 'All',
             categories: ['All', 'Face', 'Eyes', 'Lips', 'Body', 'Hair'],
-            selectedCurrency: 'USD',
+            selectedCurrency: localStorage.getItem('selectedCurrency') || 'USD',
             currencyRates: {
                 USD: 1,
                 MYR: 4.7,
