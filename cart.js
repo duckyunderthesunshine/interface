@@ -33,7 +33,7 @@ createApp({
             return this.cart.filter(item => item.selected).reduce((sum, item) => sum + item.price * item.quantity, 0);
         },
         cartCount() {
-            return this.cart.filter(item => item.selected).reduce((sum, item) => sum + item.quantity, 0);
+            return this.cart.reduce((sum, item) => sum + item.quantity, 0);
         },
         postageFee() {
             // If no items are selected, postage is 0
