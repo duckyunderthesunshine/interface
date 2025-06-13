@@ -28,7 +28,23 @@ createApp({
                 JPY: '¥'
             },
             cart: JSON.parse(localStorage.getItem('cart') || '[]'),
-            showOverlay: true
+            showOverlay: true,
+            allProducts: [
+                { id: 1, name: "Luminous Foundation", price: 45.00 },
+                { id: 2, name: "Velvet Matte Lipstick", price: 28.00 },
+                { id: 3, name: "Ethereal Eyeshadow Palette", price: 65.00 },
+                { id: 4, name: "Rosy Glow Blush", price: 32.00 },
+                { id: 5, name: "Crystal Clear Lip Gloss", price: 22.00 },
+                { id: 6, name: "Pastel Dream Highlighter", price: 38.00 },
+                { id: 7, name: "Peachy Dew Setting Spray", price: 27.00 },
+                { id: 8, name: "Unicorn Glow Primer", price: 30.00 },
+                { id: 9, name: "Strawberry Cream Concealer", price: 24.00 },
+                { id: 10, name: "Butterfly Kiss Mascara", price: 26.00 },
+                { id: 11, name: "Pastel Shine Hair Serum", price: 20.00 },
+                { id: 12, name: "Mermaid Shimmer Body Oil", price: 36.00 }
+            ],
+            filteredProducts: [],
+            showProductDropdown: false
         }
     },
     computed: {
@@ -92,21 +108,28 @@ createApp({
     },
     methods: {
         formatPrice(price) {
+            // Always convert from USD to selected currency for display
             const rate = this.currencyRates[this.selectedCurrency] || 1;
             const symbol = this.currencySymbols[this.selectedCurrency] || '$';
             let converted = price * rate;
             if (this.selectedCurrency === 'KRW' || this.selectedCurrency === 'JPY') {
-                converted = Math.round(converted);
+                converted = Math.round(converted).toLocaleString('en-US');
             } else {
                 converted = converted.toFixed(2);
             }
             return `${symbol}${converted}`;
         },
         savePurchase() {
+            // Convert entered price back to USD for storage
+            let priceUSD = this.form.price;
+            const rate = this.currencyRates[this.selectedCurrency] || 1;
+            if (rate !== 1) {
+                priceUSD = this.form.price / rate;
+            }
             if (this.editIndex === null) {
-                this.purchases.push({ ...this.form });
+                this.purchases.push({ ...this.form, price: priceUSD });
             } else {
-                this.purchases.splice(this.editIndex, 1, { ...this.form });
+                this.purchases.splice(this.editIndex, 1, { ...this.form, price: priceUSD });
             }
             this.savePurchases();
             this.resetForm();
@@ -145,6 +168,24 @@ createApp({
             } else {
                 alert('Please enter your email address.');
             }
+        },
+        filterProducts() {
+            const query = this.form.name.trim().toLowerCase();
+            if (!query) {
+                this.filteredProducts = [];
+                this.showProductDropdown = false;
+                return;
+            }
+            this.filteredProducts = this.allProducts.filter(p =>
+                p.name.toLowerCase().includes(query)
+            );
+            this.showProductDropdown = this.filteredProducts.length > 0;
+        },
+        selectProduct(product) {
+            // Store price in USD
+            this.form.name = product.name;
+            this.form.price = product.price;
+            this.showProductDropdown = false;
         }
     },
     watch: {
