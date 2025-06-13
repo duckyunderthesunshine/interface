@@ -233,6 +233,11 @@ const app = createApp({
             // This method is just to trigger reactivity
         },
         addToCart(product) {
+            if (!this.isLoggedIn) {
+                alert('Please log in to add items to your cart.');
+                window.location.href = 'login.html';
+                return;
+            }
             const idx = this.cart.findIndex(item => item.id === product.id);
             if (idx !== -1) {
                 this.cart[idx].quantity += 1;
