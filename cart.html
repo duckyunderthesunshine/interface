@@ -73,7 +73,7 @@
                                     <thead>
                                         <tr>
                                             <th scope="col">
-                                                <input type="checkbox" v-model="allSelected" title="Select All" />
+                                                <input type="checkbox" v-model="allSelected" title="Select All" class="purchase-checkbox"/>
                                             </th>
                                             <th scope="col">Product</th>
                                             <th scope="col">Price</th>
@@ -85,7 +85,7 @@
                                     <tbody>
                                         <tr v-for="(item, idx) in cart" :key="item.id">
                                             <td>
-                                                <input type="checkbox" v-model="item.selected" />
+                                                <input type="checkbox" v-model="item.selected" class="purchase-checkbox"/>
                                             </td>
                                             <td>{{ item.name }}</td>
                                             <td>{{ formatPrice(item.price) }}</td>

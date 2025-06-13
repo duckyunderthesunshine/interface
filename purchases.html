@@ -77,7 +77,14 @@
                             <div class="row g-2 align-items-end">
                                 <div class="col-md-4">
                                     <label class="form-label">Product Name</label>
-                                    <input type="text" class="form-control" v-model="form.name" required>
+                                    <div style="position:relative;">
+                                        <input type="text" class="form-control" v-model="form.name" @input="filterProducts" @focus="filterProducts" @blur="setTimeout(() => showProductDropdown = false, 200)" autocomplete="off" required>
+                                        <ul v-if="showProductDropdown" class="list-group position-absolute w-100" style="z-index:10; max-height:200px; overflow-y:auto;">
+                                            <li v-for="product in filteredProducts" :key="product.id" class="list-group-item list-group-item-action" @mousedown.prevent="selectProduct(product)" style="cursor:pointer;">
+                                                {{ product.name }} <span class="text-muted float-end">{{ formatPrice(product.price) }}</span>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label">Price</label>
@@ -101,6 +108,9 @@
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
+                                        <th>
+                                            <input type="checkbox" v-model="allSelected" title="Select All" class="purchase-checkbox" />
+                                        </th>
                                         <th>Product</th>
                                         <th>Price</th>
                                         <th>Quantity</th>
@@ -109,9 +119,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <template v-for="order in groupedPurchases" :key="order.id">
+                                    <template v-for="(order, orderIdx) in groupedPurchases" :key="order.id">
                                         <tr class="order-header">
-                                            <td colspan="5" class="p-3">
+                                            <td colspan="6" class="p-3">
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <span>Order on {{ order.date }}</span>
                                                     <span class="fw-bold">Order Total: {{ formatPrice(order.total) }}</span>
@@ -119,6 +129,9 @@
                                             </td>
                                         </tr>
                                         <tr v-for="(item, itemIndex) in order.items" :key="item.id + '-' + itemIndex">
+                                            <td>
+                                                <input type="checkbox" v-model="item.selected" class="purchase-checkbox" class="purchase-checkbox"/>
+                                            </td>
                                             <td>{{ item.name }}</td>
                                             <td>{{ formatPrice(item.price) }}</td>
                                             <td>{{ item.quantity }}</td>
@@ -132,11 +145,25 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div v-if="groupedPurchases.length > 0">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-semibold">Subtotal:</span>
+                                <span>{{ formatPrice(selectedSubtotal) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-semibold">Shipping:</span>
+                                <span>{{ formatPrice(selectedShipping) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3 border-top pt-3">
+                                <h5 class="mb-0">Grand Total:</h5>
+                                <h5 class="mb-0">{{ formatPrice(selectedGrandTotal) }}</h5>
+                            </div>
+                        </div>
                         <div v-if="purchases.length === 0" class="text-center py-4">
                             <p>No purchases yet.</p>
                         </div>
                         <div class="text-center mt-4">
-                            <button class="btn btn-dark px-5 py-2" style="font-size:1.2rem; background:#f8c6ec; color:#fff; border:none; border-radius:2rem; font-weight:bold;">PROCEED TO PAYMENT</button>
+                            <button class="btn btn-dark proceed-payment-btn">PROCEED TO PAYMENT</button>
                         </div>
                     </div>
                 </div>
