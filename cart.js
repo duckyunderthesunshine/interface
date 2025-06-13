@@ -14,10 +14,10 @@ createApp({
             selectedCurrency: localStorage.getItem('selectedCurrency') || 'USD',
             currencyRates: {
                 USD: 1,
-                MYR: 4.24,
-                GBP: 0.74,
-                KRW: 1369.60,
-                JPY: 143.49
+                MYR: 4.7,
+                GBP: 0.78,
+                KRW: 1370,
+                JPY: 157
             },
             currencySymbols: {
                 USD: '$',

@@ -107,6 +107,15 @@ createApp({
         }
     },
     methods: {
+        getConvertedPrice(priceUSD) {
+            if (!priceUSD && priceUSD !== 0) return '';
+            const rate = this.currencyRates[this.selectedCurrency] || 1;
+            let converted = priceUSD * rate;
+            if (this.selectedCurrency === 'KRW' || this.selectedCurrency === 'JPY') {
+                return Math.round(converted);
+            }
+            return Number(converted.toFixed(2));
+        },
         formatPrice(price) {
             // Always convert from USD to selected currency for display
             const rate = this.currencyRates[this.selectedCurrency] || 1;
@@ -136,8 +145,8 @@ createApp({
         },
         editPurchase(item) {
             const originalIndex = this.purchases.findIndex(p => p === item);
-            this.form = { ...item };
             this.editIndex = originalIndex;
+            this.form = { ...item, price: this.getConvertedPrice(item.price) };
         },
         deletePurchase(item) {
             if (confirm('Delete this purchase?')) {

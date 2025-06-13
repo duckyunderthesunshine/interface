@@ -98,7 +98,7 @@ const app = createApp({
             let converted = price * rate;
             // For KRW and JPY, show no decimals
             if (this.selectedCurrency === 'KRW' || this.selectedCurrency === 'JPY') {
-                converted = Math.round(converted);
+                converted = Math.round(converted).toLocaleString('en-US');
             } else {
                 converted = converted.toFixed(2);
             }
