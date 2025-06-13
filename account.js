@@ -63,6 +63,7 @@ createApp({
         },
         async logout() {
             localStorage.removeItem('rememberMe');
+            localStorage.removeItem('cart');
             const { error } = await supabase.auth.signOut();
             if (!error) {
                 window.location.href = 'index.html';
