@@ -193,7 +193,7 @@ createApp({
         selectProduct(product) {
             // Store price in USD
             this.form.name = product.name;
-            this.form.price = product.price;
+            this.form.price = this.getConvertedPrice(product.price);
             this.showProductDropdown = false;
         }
     },
