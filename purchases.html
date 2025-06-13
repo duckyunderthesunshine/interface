@@ -102,7 +102,7 @@
                                 <thead>
                                     <tr>
                                         <th>
-                                            <input type="checkbox" v-model="allSelected" title="Select All" />
+                                            <input type="checkbox" v-model="allSelected" title="Select All" class="purchase-checkbox" />
                                         </th>
                                         <th>Product</th>
                                         <th>Price</th>
@@ -123,7 +123,7 @@
                                         </tr>
                                         <tr v-for="(item, itemIndex) in order.items" :key="item.id + '-' + itemIndex">
                                             <td>
-                                                <input type="checkbox" v-model="item.selected" />
+                                                <input type="checkbox" v-model="item.selected" class="purchase-checkbox" class="purchase-checkbox"/>
                                             </td>
                                             <td>{{ item.name }}</td>
                                             <td>{{ formatPrice(item.price) }}</td>
@@ -156,7 +156,7 @@
                             <p>No purchases yet.</p>
                         </div>
                         <div class="text-center mt-4">
-                            <button class="btn btn-dark px-5 py-2" style="font-size:1.2rem; background:#f8c6ec; color:#fff; border:none; border-radius:2rem; font-weight:bold;">PROCEED TO PAYMENT</button>
+                            <button class="btn btn-dark proceed-payment-btn">PROCEED TO PAYMENT</button>
                         </div>
                     </div>
                 </div>

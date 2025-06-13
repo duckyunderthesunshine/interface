@@ -14,10 +14,10 @@ createApp({
             selectedCurrency: localStorage.getItem('selectedCurrency') || 'USD',
             currencyRates: {
                 USD: 1,
-                MYR: 4.7,
-                GBP: 0.78,
-                KRW: 1370,
-                JPY: 157
+                MYR: 4.24,
+                GBP: 0.74,
+                KRW: 1369.60,
+                JPY: 143.49
             },
             currencySymbols: {
                 USD: '$',
@@ -66,6 +66,11 @@ createApp({
     async created() {
         const { data } = await supabase.auth.getUser();
         this.isLoggedIn = !!data?.user;
+        if (!this.isLoggedIn) {
+            this.cart = [];
+            window.location.href = 'login.html';
+            return;
+        }
         const storedCart = localStorage.getItem('cart');
         if (storedCart) {
             // Ensure 'selected' is always present and reactive
@@ -103,7 +108,7 @@ createApp({
             const symbol = this.currencySymbols[this.selectedCurrency] || '$';
             let converted = price * rate;
             if (this.selectedCurrency === 'KRW' || this.selectedCurrency === 'JPY') {
-                converted = Math.round(converted);
+                converted = Math.round(converted).toLocaleString('en-US');
             } else {
                 converted = converted.toFixed(2);
             }
