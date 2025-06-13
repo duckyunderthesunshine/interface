@@ -56,6 +56,38 @@ createApp({
 
             // Convert to array and sort by date so newest orders are first
             return Object.values(grouped).sort((a, b) => new Date(b.date) - new Date(a.date));
+        },
+        selectedItems() {
+            // All selected items in all orders
+            return this.purchases.filter(item => item.selected);
+        },
+        selectedSubtotal() {
+            return this.selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        },
+        selectedShipping() {
+            // $5 base shipping, 0 if nothing selected
+            if (this.selectedItems.length === 0) return 0;
+            const baseFee = 5;
+            const rate = this.currencyRates[this.selectedCurrency] || 1;
+            let converted = baseFee * rate;
+            if (this.selectedCurrency === 'KRW' || this.selectedCurrency === 'JPY') {
+                converted = Math.round(converted);
+            } else {
+                converted = Number(converted.toFixed(2));
+            }
+            return converted;
+        },
+        selectedGrandTotal() {
+            if (this.selectedItems.length === 0) return 0;
+            return this.selectedSubtotal + this.selectedShipping;
+        },
+        allSelected: {
+            get() {
+                return this.purchases.length > 0 && this.purchases.every(item => item.selected);
+            },
+            set(value) {
+                this.purchases.forEach(item => { item.selected = value; });
+            }
         }
     },
     methods: {
@@ -133,5 +165,11 @@ createApp({
             this.isLoggedIn = true;
             this.showOverlay = false;
         }
+        // Ensure 'selected' property for every item in every order
+        this.purchases.forEach(item => {
+            if (typeof item.selected === 'undefined') {
+                item.selected = true;
+            }
+        });
     }
 }).mount('#app');
