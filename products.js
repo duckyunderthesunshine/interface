@@ -4,8 +4,9 @@ const SUPABASE_URL = 'https://ltkylpxgrqpnfkxfmgpa.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0a3lscHhncnFwbmZreGZtZ3BhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0MTM4MDAsImV4cCI6MjA2NDk4OTgwMH0.Gm2B87vmlA9XZDsEXOFHibu4z-hoR1Wu1a_yjpI77kc';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const Products = {
-    template: document.querySelector('#products-template').innerHTML,
+const { createApp } = Vue;
+
+const app = createApp({
     data() {
         return {
             email: '',
@@ -22,7 +23,7 @@ const Products = {
                 JPY: 157
             },
             currencySymbols: {
-                USD: '$', 
+                USD: '$',
                 MYR: 'RM',
                 GBP: '£',
                 KRW: '₩',
