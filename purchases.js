@@ -84,14 +84,7 @@ createApp({
             // $5 base shipping, 0 if nothing selected
             if (this.selectedItems.length === 0) return 0;
             const baseFee = 5;
-            const rate = this.currencyRates[this.selectedCurrency] || 1;
-            let converted = baseFee * rate;
-            if (this.selectedCurrency === 'KRW' || this.selectedCurrency === 'JPY') {
-                converted = Math.round(converted);
-            } else {
-                converted = Number(converted.toFixed(2));
-            }
-            return converted;
+            return baseFee; // Return the fee in USD
         },
         selectedGrandTotal() {
             if (this.selectedItems.length === 0) return 0;

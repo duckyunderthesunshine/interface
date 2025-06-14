@@ -40,14 +40,7 @@ createApp({
             if (!this.cart.some(item => item.selected)) return 0;
             // Base postage fee in USD
             const baseFee = 5;
-            const rate = this.currencyRates[this.selectedCurrency] || 1;
-            let converted = baseFee * rate;
-            if (this.selectedCurrency === 'KRW' || this.selectedCurrency === 'JPY') {
-                converted = Math.round(converted);
-            } else {
-                converted = Number(converted.toFixed(2));
-            }
-            return converted;
+            return baseFee; // Return the fee in USD
         },
         grandTotal() {
             // If no items are selected, grand total is 0
