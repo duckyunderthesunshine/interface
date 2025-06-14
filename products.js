@@ -181,13 +181,24 @@ const app = createApp({
             return Math.ceil(this.sortedProducts.length / this.productsPerPage) || 1;
         }
     },
-    created() {
+    async created() {
+        // If this is a new browser session and "Remember Me" is not checked, log out.
+        if (!sessionStorage.getItem('loggedInThisSession') && !localStorage.getItem('rememberMe')) {
+            await supabase.auth.signOut();
+            localStorage.removeItem('cart');
+        }
+
         const urlParams = new URLSearchParams(window.location.search);
         const category = urlParams.get('category');
         if (category && this.categories.includes(category)) {
             this.selectedCategory = category;
         }
-        this.checkAuth();
+
+        await this.checkAuth();
+        if (this.isLoggedIn) {
+            sessionStorage.setItem('loggedInThisSession', 'true');
+        }
+
         // Load cart from localStorage
         const storedCart = localStorage.getItem('cart');
         if (storedCart) {

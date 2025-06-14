@@ -200,12 +200,19 @@ createApp({
         }
     },
     async created() {
+        // If this is a new browser session and "Remember Me" is not checked, log out.
+        if (!sessionStorage.getItem('loggedInThisSession') && !localStorage.getItem('rememberMe')) {
+            await supabase.auth.signOut();
+            localStorage.removeItem('cart');
+        }
+
         const { data, error } = await supabase.auth.getUser();
         if (!data?.user) {
             window.location.href = 'login.html';
             this.showOverlay = false;
             return;
         } else {
+            sessionStorage.setItem('loggedInThisSession', 'true');
             this.isLoggedIn = true;
             this.showOverlay = false;
         }
