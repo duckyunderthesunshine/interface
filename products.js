@@ -182,6 +182,11 @@ const app = createApp({
         }
     },
     created() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category');
+        if (category && this.categories.includes(category)) {
+            this.selectedCategory = category;
+        }
         this.checkAuth();
         // Load cart from localStorage
         const storedCart = localStorage.getItem('cart');
