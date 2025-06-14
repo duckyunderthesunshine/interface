@@ -75,7 +75,7 @@ createApp({
         },
         selectedItems() {
             // All selected items in all orders
-            return this.purchases.filter(item => item.selected);
+            return this.savedItems.filter(item => item.selected);
         },
         selectedSubtotal() {
             return this.selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
