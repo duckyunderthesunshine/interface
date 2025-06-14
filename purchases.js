@@ -89,7 +89,7 @@ createApp({
                 return this.savedItems.length > 0 && this.savedItems.every(item => item.selected);
             },
             set(value) {
-                this.savedItems.forEach item => { item.selected = value; });
+                this.savedItems.forEach((item) => { item.selected = value; });
             }
         }
     },
