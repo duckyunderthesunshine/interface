@@ -286,29 +286,4 @@ createApp({
             await this.fetchSavedItems();
         }
     },
-    
-    methods: {
-        async fetchSavedItems() {
-            this.showOverlay = true;
-            try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) return;
-
-                const { data, error } = await supabase
-                    .from('saved_items')
-                    .select('*')
-                    .eq('user_id', user.id);
-
-                if (error) throw error;
-                
-                // Add the 'selected' property for client-side state management
-                this.savedItems = data.map(item => ({...item, selected: true }));
-            } catch (error) {
-                console.error('Error fetching saved items:', error.message);
-                alert('Could not fetch your saved items.');
-            } finally {
-                this.showOverlay = false;
-            }
-        }
-    }
 }).mount('#app');
