@@ -99,7 +99,6 @@ const Products = {
                 { id: 11, name: "Pastel Shine Hair Serum", price: 20.00, image: "resources/pastel_shine_hair_serum.png", description: "Lightweight serum for silky, shiny, frizz-free pastel-perfect hair.", category: "Hair" },
                 { id: 12, name: "Mermaid Shimmer Body Oil", price: 36.00, image: "resources/mermaid_shimmer_body_oil.png", description: "Lightweight, sparkling body oil for a luminous, beachy glow.", category: "Body" }
             ],
-            showSearchBar: false,
             searchQuery: '',
             currentPage: 1,
             productsPerPage: 6,
@@ -147,10 +146,6 @@ const Products = {
         formatPrice(price) {
             return this.$root.formatPrice(price);
         },
-        toggleSearchBar() {
-            this.showSearchBar = !this.showSearchBar;
-            if (!this.showSearchBar) this.searchQuery = '';
-        },
         searchProducts() {
             this.currentPage = 1;
         },
@@ -174,6 +169,11 @@ const Products = {
         sortOption() { this.currentPage = 1; },
         '$route'(to, from) {
             this.updateCategoryFromRoute(to);
+        },
+        '$root.showProductSearchBar'(isShown) {
+            if (!isShown) {
+                this.searchQuery = '';
+            }
         }
     }
 };

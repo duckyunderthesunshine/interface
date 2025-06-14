@@ -34,6 +34,7 @@
             <div class="container-fluid px-4">
                 <router-link class="navbar-brand" to="/">BEST BEAUTY</router-link>
                 <div class="d-lg-none ms-auto navbar-icons">
+                    <button v-if="$route.name === 'Products'" @click="$root.showProductSearchBar = !$root.showProductSearchBar" class="icon-btn" title="Search"><i class="fa fa-search"></i></button>
                     <router-link :to="isLoggedIn ? '/account' : '/login'" class="icon-btn" title="Account"><i class="fa fa-user"></i></router-link>
                     <router-link to="/cart" class="icon-btn position-relative" title="Cart">
                         <i class="fa fa-shopping-bag"></i>
@@ -53,8 +54,9 @@
                         </li>
                     </ul>
                     <div class="navbar-icons d-none d-lg-flex ms-auto">
+                        <button v-if="$route.name === 'Products'" @click="$root.showProductSearchBar = !$root.showProductSearchBar" class="icon-btn" title="Search"><i class="fa fa-search"></i></button>
                         <router-link :to="isLoggedIn ? '/account' : '/login'" class="icon-btn" title="Account"><i class="fa fa-user"></i></router-link>
-                        <router-link to="/cart" class="icon-link position-relative" title="Cart">
+                        <router-link to="/cart" class="icon-btn position-relative" title="Cart">
                             <i class="fa fa-shopping-bag"></i>
                             <span class="cart-badge">{{ cartCount }}</span>
                         </router-link>

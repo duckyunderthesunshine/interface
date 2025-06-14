@@ -8,6 +8,7 @@ const { createApp } = Vue
 const app = createApp({
     data() {
         return {
+            showProductSearchBar: false,
             newsletterEmail: '',
             isLoggedIn: false,
             cart: [],
@@ -116,11 +117,21 @@ const app = createApp({
         }
     },
     watch: {
+        cart: {
+            handler() {
+                this.updateCartCount();
+                this.saveCart();
+            },
+            deep: true
+        },
         selectedCurrency: {
             handler(newVal) {
                 localStorage.setItem('selectedCurrency', newVal);
             },
             immediate: true
+        },
+        '$route' (to, from){
+            this.showProductSearchBar = false;
         }
     }
 })

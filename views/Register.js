@@ -16,7 +16,7 @@ const Register = {
                     <form @submit.prevent="register">
                         <div class="mb-3">
                             <label for="registerName" class="form-label">Name</label>
-                            <input type="text class="form-control" id="registerName" v-model="name" required autocomplete="name">
+                            <input type="text" class="form-control" id="registerName" v-model="name" required autocomplete="name">
                         </div>
                         <div class="mb-3">
                             <label for="registerEmail" class="form-label">Email</label>

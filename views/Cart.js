@@ -99,7 +99,6 @@ const Cart = {
             },
             set(value) {
                 this.cart.forEach(item => { item.selected = value; });
-                this.saveCart();
             }
         }
     },
