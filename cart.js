@@ -122,26 +122,51 @@ createApp({
             const value = !this.allSelected;
             this.cart.forEach(item => { item.selected = value; });
         },
-        proceedToPurchase() {
+        async proceedToPurchase() {
             const selectedItems = this.cart.filter(item => item.selected);
             if (selectedItems.length === 0) {
                 alert("Please select at least one item to purchase.");
                 return;
             }
             this.showOverlay = true;
-            let savedItems = JSON.parse(localStorage.getItem('savedItems') || '[]');
-            const orderId = 'order-' + Date.now(); // Unique ID for this order
-            const today = new Date().toISOString().slice(0, 10);
-            const newOrderItems = selectedItems.map(item => ({
-                ...item,
-                orderId: orderId, // Tag each item with the same orderId
-                date: today
-            }));
-            savedItems.unshift(...newOrderItems);
-            localStorage.setItem('savedItems', JSON.stringify(savedItems));
-            // Remove only purchased items from cart
-            this.cart = this.cart.filter(item => !item.selected);
-            window.location.href = 'purchases.html';
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    alert("You must be logged in to save items.");
+                    window.location.href = 'login.html';
+                    return;
+                }
+                const orderId = 'order-' + Date.now();
+                const today = new Date().toISOString().slice(0, 10);
+
+                const newSavedItems = selectedItems.map(item => ({
+                    user_id: user.id,
+                    product_id: item.id,
+                    order_id: orderId,
+                    name: item.name,
+                    price: item.price, // Stored as USD
+                    quantity: item.quantity,
+                    date: today,
+                    image: item.image,
+                    description: item.description,
+                    category: item.category
+                }));
+
+                const { error } = await supabase
+                    .from('saved_items')
+                    .insert(newSavedItems);
+
+                if (error) throw error;
+
+                // Remove only purchased items from cart
+                this.cart = this.cart.filter(item => !item.selected);
+                
+                window.location.href = 'purchases.html';
+            } catch (error) {
+                console.error('Error saving purchase:', error.message);
+                alert('There was an error saving your items. Please try again.');
+                this.showOverlay = false;
+            }
         }
     }
 }).mount('#app');

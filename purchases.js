@@ -7,8 +7,8 @@ const { createApp } = Vue;
 createApp({
     data() {
         return {
-            savedItems: JSON.parse(localStorage.getItem('savedItems') || '[]'),
-            form: { name: '', price: '', quantity: 1, date: '' },
+            savedItems: [], // Will be fetched from Supabase
+            form: { id: null, product_id: null, name: '', price: '', quantity: 1, date: '', image: '', description: '', category: '' },
             editIndex: null,
             isLoggedIn: false,
             selectedCurrency: localStorage.getItem('selectedCurrency') || 'USD',
@@ -121,39 +121,93 @@ createApp({
             }
             return `${symbol}${converted}`;
         },
-        saveItem() {
-            // Convert entered price back to USD for storage
+        async saveItem() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                alert("Authentication error. Please log in again.");
+                return;
+            }
+            
             let priceUSD = this.form.price;
             const rate = this.currencyRates[this.selectedCurrency] || 1;
             if (rate !== 1) {
                 priceUSD = this.form.price / rate;
             }
-            if (this.editIndex === null) {
-                this.savedItems.push({ ...this.form, price: priceUSD });
-            } else {
-                this.savedItems.splice(this.editIndex, 1, { ...this.form, price: priceUSD });
+
+            const payload = {
+                user_id: user.id,
+                product_id: this.form.product_id,
+                name: this.form.name,
+                price: priceUSD,
+                quantity: this.form.quantity,
+                date: this.form.date,
+                image: this.form.image,
+                description: this.form.description,
+                category: this.form.category,
+                order_id: this.form.order_id || `manual-${Date.now()}` 
+            };
+
+            try {
+                if (this.editIndex !== null) {
+                    const { data, error } = await supabase
+                        .from('saved_items')
+                        .update(payload)
+                        .eq('id', this.editIndex)
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+                    
+                    const index = this.savedItems.findIndex(i => i.id === this.editIndex);
+                    if (index > -1) {
+                        this.savedItems.splice(index, 1, {...data, selected: this.form.selected });
+                    }
+                } else {
+                    const { data, error } = await supabase
+                        .from('saved_items')
+                        .insert(payload)
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+                    this.savedItems.unshift({ ...data, selected: true });
+                }
+                this.resetForm();
+            } catch (error) {
+                console.error('Error saving item:', error.message);
+                alert('Failed to save item.');
             }
-            this.saveItems();
-            this.resetForm();
         },
         editItem(item) {
             const originalIndex = this.savedItems.findIndex(p => p === item);
             this.editIndex = originalIndex;
             this.form = { ...item, price: this.getConvertedPrice(item.price) };
         },
-        deleteItem(item) {
-            if (confirm('Delete this item?')) {
-                const originalIndex = this.savedItems.findIndex(p => p === item);
-                this.savedItems.splice(originalIndex, 1);
-                this.saveItems();
-                this.resetForm();
+        async deleteItem(item) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                try {
+                    const { error } = await supabase
+                        .from('saved_items')
+                        .delete()
+                        .eq('id', item.id);
+
+                    if (error) throw error;
+
+                    const index = this.savedItems.findIndex(i => i.id === item.id);
+                    if (index > -1) {
+                        this.savedItems.splice(index, 1);
+                    }
+                    if (this.editIndex === item.id) {
+                        this.resetForm();
+                    }
+                } catch (error) {
+                    console.error('Error deleting item:', error.message);
+                    alert('Failed to delete item.');
+                }
             }
         },
-        saveItems() {
-            localStorage.setItem('savedItems', JSON.stringify(this.savedItems));
-        },
         resetForm() {
-            this.form = { name: '', price: '', quantity: 1, date: '' };
+            this.form = { id: null, product_id: null, name: '', price: '', quantity: 1, date: '', image: '', description: '', category: '' };
             this.editIndex = null;
         },
         async logout() {
@@ -185,18 +239,16 @@ createApp({
             this.showProductDropdown = this.filteredProducts.length > 0;
         },
         selectProduct(product) {
-            // Store price in USD
-            this.form.name = product.name;
-            this.form.price = this.getConvertedPrice(product.price);
+            this.form = {
+                ...this.form,
+                product_id: product.id,
+                name: product.name,
+                price: this.getConvertedPrice(product.price),
+                image: product.image,
+                description: product.description,
+                category: product.category
+            };
             this.showProductDropdown = false;
-        }
-    },
-    watch: {
-        savedItems: {
-            handler(newVal) {
-                this.saveItems();
-            },
-            deep: true
         }
     },
     async created() {
@@ -209,18 +261,35 @@ createApp({
         const { data, error } = await supabase.auth.getUser();
         if (!data?.user) {
             window.location.href = 'login.html';
-            this.showOverlay = false;
             return;
         } else {
             sessionStorage.setItem('loggedInThisSession', 'true');
             this.isLoggedIn = true;
-            this.showOverlay = false;
+            await this.fetchSavedItems();
         }
-        // Ensure 'selected' property for every item in every order
-        this.savedItems.forEach(item => {
-            if (typeof item.selected === 'undefined') {
-                item.selected = true;
+    },
+    
+    methods: {
+        async fetchSavedItems() {
+            this.showOverlay = true;
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+
+                const { data, error } = await supabase
+                    .from('saved_items')
+                    .select('*')
+                    .eq('user_id', user.id);
+
+                if (error) throw error;
+                
+                // Add the 'selected' property for client-side state management
+                this.savedItems = data.map(item => ({...item, selected: true }));
+            } catch (error) {
+                console.error('Error fetching saved items:', error.message);
+                alert('Could not fetch your saved items.');
+            } finally {
+                this.showOverlay = false;
             }
-        });
-    }
+        },
 }).mount('#app');
