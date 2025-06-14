@@ -291,5 +291,6 @@ createApp({
             } finally {
                 this.showOverlay = false;
             }
-        },
+        }
+    }
 }).mount('#app');
