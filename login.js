@@ -19,9 +19,17 @@ createApp({
         }
     },
     async created() {
+        // If this is a new browser session and "Remember Me" is not checked, log out.
+        if (!sessionStorage.getItem('loggedInThisSession') && !localStorage.getItem('rememberMe')) {
+            await supabase.auth.signOut();
+            localStorage.removeItem('cart');
+        }
+
         const { data } = await supabase.auth.getUser();
         this.isLoggedIn = !!data?.user;
+
         if (this.isLoggedIn) {
+            sessionStorage.setItem('loggedInThisSession', 'true');
             // If user is already logged in, redirect them
             window.location.href = 'account.html';
         } else {
@@ -40,16 +48,22 @@ createApp({
                 });
 
                 if (error) throw error;
-                if (this.rememberMe) this.saveSession();
+
+                // Handle the remember me logic
+                if (this.rememberMe) {
+                    localStorage.setItem('rememberMe', 'true');
+                } else {
+                    localStorage.removeItem('rememberMe');
+                }
+                // Flag that user is logged in for this browser session
+                sessionStorage.setItem('loggedInThisSession', 'true');
+
                 window.location.href = 'index.html';
             } catch (error) {
                 this.error = error.message;
             } finally {
                 this.loading = false;
             }
-        },
-        saveSession() {
-            localStorage.setItem('rememberMe', 'true');
         },
         updateCartCount() {
             let cart = [];
