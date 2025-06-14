@@ -3,7 +3,34 @@ const SUPABASE_URL = 'https://ltkylpxgrqpnfkxfmgpa.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0a3lscHhncnFwbmZreGZtZ3BhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0MTM4MDAsImV4cCI6MjA2NDk4OTgwMH0.Gm2B87vmlA9XZDsEXOFHibu4z-hoR1Wu1a_yjpI77kc';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const { createApp } = Vue
+const { createApp } = Vue;
+const { createRouter, createWebHashHistory } = VueRouter;
+
+// Initialize Vue Router
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes: [
+    { path: '/', component: Home, meta: { requiresAuth: false } },
+    { path: '/products', component: Products, meta: { requiresAuth: false } },
+    { path: '/login', component: Login, meta: { requiresAuth: false } },
+    { path: '/register', component: Register, meta: { requiresAuth: false } },
+    { path: '/account', component: Account, meta: { requiresAuth: true } },
+    { path: '/cart', component: Cart, meta: { requiresAuth: true } },
+    { path: '/purchases', component: Purchases, meta: { requiresAuth: true } }
+  ]
+});
+
+// Navigation guard for authentication
+router.beforeEach(async (to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (requiresAuth && !user) {
+    next('/login');
+  } else {
+    next();
+  }
+});
 
 const app = createApp({
     data() {
@@ -137,4 +164,8 @@ const app = createApp({
     }
 })
 
-app.mount('#app') 
+// Use router plugin
+app.use(router);
+
+// Mount the app
+app.mount('#app');
