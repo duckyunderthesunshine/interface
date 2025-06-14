@@ -191,23 +191,30 @@ createApp({
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         async deleteItem(item) {
-            if (confirm('Are you sure you want to delete this item?')) {
+            if (confirm('Are you sure you want to permanently delete this item?')) {
                 try {
+                    // Step 1: Tell Supabase to delete the item from the database
                     const { error } = await supabase
                         .from('saved_items')
                         .delete()
-                        .eq('id', item.id);
-                    if (error) throw error;
+                        .eq('id', item.id); // Matches the specific item by its unique ID
+
+                    if (error) throw error; // Handle any database errors
+
+                    // Step 2: If database deletion is successful, remove it from the page view
                     const index = this.savedItems.findIndex(i => i.id === item.id);
                     if (index > -1) {
                         this.savedItems.splice(index, 1);
                     }
+
+                    // Optional: If the deleted item was being edited, clear the form
                     if (this.editIndex === item.id) {
                         this.resetForm();
                     }
+
                 } catch (error) {
                     console.error('Error deleting item:', error.message);
-                    alert('Failed to delete item.');
+                    alert('Failed to delete item from the database.');
                 }
             }
         },
