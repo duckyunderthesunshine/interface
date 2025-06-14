@@ -108,6 +108,14 @@ const app = createApp({
                 alert('Please enter your email address.')
             }
         }
+    },
+    watch: {
+        selectedCurrency: {
+            handler(newVal) {
+                localStorage.setItem('selectedCurrency', newVal);
+            },
+            immediate: true
+        }
     }
 })
 
