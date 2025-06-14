@@ -65,7 +65,7 @@
                             <p class="mb-4">Your cart is currently empty.</p>
                             <a href="products.html" class="btn btn-dark mb-3">Continue Shopping</a>
                             <br/>
-                            <a href="purchases.html" class="btn btn-dark">View Purchase History</a>
+                            <a href="purchases.html" class="btn btn-dark">View Saved Items</a>
                         </div>
                         <div v-else>
                             <div class="table-responsive mb-4">
@@ -117,7 +117,7 @@
                                 <h5 class="mb-0">{{ formatPrice(grandTotal) }}</h5>
                             </div>
                             <div class="text-end">
-                                <button @click="proceedToPurchase" class="btn btn-dark">Proceed to Purchase</button>
+                                <button @click="proceedToPurchase" class="btn btn-dark">Save and Proceed</button>
                             </div>
                         </div>
                     </div>
