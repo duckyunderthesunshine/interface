@@ -32,13 +32,13 @@
         <!-- Navigation -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
             <div class="container-fluid px-4">
-                <a class="navbar-brand" href="index.html">BEST BEAUTY</a>
+                <router-link class="navbar-brand" to="/">BEST BEAUTY</router-link>
                 <div class="d-lg-none ms-auto navbar-icons">
-                    <a :href="isLoggedIn ? 'account.html' : 'login.html'" class="icon-btn" title="Account"><i class="fa fa-user"></i></a>
-                    <a href="cart.html" class="icon-btn position-relative" title="Cart">
+                    <router-link :to="isLoggedIn ? '/account' : '/login'" class="icon-btn" title="Account"><i class="fa fa-user"></i></router-link>
+                    <router-link to="/cart" class="icon-link position-relative" title="Cart">
                         <i class="fa fa-shopping-bag"></i>
                         <span class="cart-badge">{{ cartCount }}</span>
-                    </a>
+                    </router-link>
                 </div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
@@ -46,18 +46,18 @@
                 <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                     <ul class="navbar-nav mx-auto navbar-center-links">
                         <li class="nav-item">
-                            <a class="nav-link" href="index.html">Home</a>
+                            <router-link class="nav-link" to="/">Home</router-link>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="products.html">Shop All</a>
+                            <router-link class="nav-link" to="/products">Shop All</router-link>
                         </li>
                     </ul>
                     <div class="navbar-icons d-none d-lg-flex ms-auto">
-                        <a :href="isLoggedIn ? 'account.html' : 'login.html'" class="icon-btn" title="Account"><i class="fa fa-user"></i></a>
-                        <a href="cart.html" class="icon-btn position-relative" title="Cart">
+                        <router-link :to="isLoggedIn ? '/account' : '/login'" class="icon-btn" title="Account"><i class="fa fa-user"></i></router-link>
+                        <router-link to="/cart" class="icon-btn position-relative" title="Cart">
                             <i class="fa fa-shopping-bag"></i>
                             <span class="cart-badge">{{ cartCount }}</span>
-                        </a>
+                        </router-link>
                     </div>
                 </div>
             </div>
