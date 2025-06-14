@@ -53,7 +53,7 @@ createApp({
         },
         groupedItems() {
             const allItems = this.savedItems || [];
-            const grouped = allPurchases.reduce((acc, p) => {
+            const grouped = allItems.reduce((acc, p) => {
                 // Legacy items or manually added items without an orderId get a unique one
                 const orderId = p.orderId || `manual-${p.name}-${p.date}-${p.price}`; 
                 
