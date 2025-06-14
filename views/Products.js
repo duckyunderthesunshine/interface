@@ -13,7 +13,7 @@ const Products = {
             <section class="products-list-section py-5">
                 <div class="container">
                     <!-- Search Bar -->
-                    <div v-if="showSearchBar" class="mb-4">
+                    <div v-if="$root.showProductSearchBar" class="mb-4">
                         <input type="text" class="form-control form-control-lg rounded-pill shadow-sm" placeholder="Search for products..." v-model="searchQuery" @input="searchProducts" autofocus>
                     </div>
                     <div class="row">
@@ -169,11 +169,6 @@ const Products = {
         sortOption() { this.currentPage = 1; },
         '$route'(to, from) {
             this.updateCategoryFromRoute(to);
-        },
-        '$root.showProductSearchBar'(isShown) {
-            if (!isShown) {
-                this.searchQuery = '';
-            }
         }
     }
 };

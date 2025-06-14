@@ -84,7 +84,7 @@ const Login = {
                 // Update shared state in root component
                 this.$root.isLoggedIn = true;
                 
-                this.$router.push('/account');
+                this.$router.push('/');
             } catch (error) {
                 this.error = error.message;
             } finally {
