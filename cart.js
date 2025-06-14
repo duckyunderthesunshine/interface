@@ -129,7 +129,7 @@ createApp({
                 return;
             }
             this.showOverlay = true;
-            let purchases = JSON.parse(localStorage.getItem('purchases') || '[]');
+            let savedItems = JSON.parse(localStorage.getItem('savedItems') || '[]');
             const orderId = 'order-' + Date.now(); // Unique ID for this order
             const today = new Date().toISOString().slice(0, 10);
             const newOrderItems = selectedItems.map(item => ({
@@ -137,8 +137,8 @@ createApp({
                 orderId: orderId, // Tag each item with the same orderId
                 date: today
             }));
-            purchases.unshift(...newOrderItems);
-            localStorage.setItem('purchases', JSON.stringify(purchases));
+            savedItems.unshift(...newOrderItems);
+            localStorage.setItem('savedItems', JSON.stringify(savedItems));
             // Remove only purchased items from cart
             this.cart = this.cart.filter(item => !item.selected);
             window.location.href = 'purchases.html';

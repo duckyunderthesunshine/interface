@@ -7,7 +7,7 @@ const { createApp } = Vue;
 createApp({
     data() {
         return {
-            purchases: JSON.parse(localStorage.getItem('purchases') || '[]'),
+            savedItems: JSON.parse(localStorage.getItem('savedItems') || '[]'),
             form: { name: '', price: '', quantity: 1, date: '' },
             editIndex: null,
             isLoggedIn: false,
@@ -51,8 +51,8 @@ createApp({
         cartCount() {
             return this.cart.reduce((sum, item) => sum + item.quantity, 0);
         },
-        groupedPurchases() {
-            const allPurchases = this.purchases || [];
+        groupedItems() {
+            const allItems = this.savedItems || [];
             const grouped = allPurchases.reduce((acc, p) => {
                 // Legacy items or manually added items without an orderId get a unique one
                 const orderId = p.orderId || `manual-${p.name}-${p.date}-${p.price}`; 
@@ -92,10 +92,10 @@ createApp({
         },
         allSelected: {
             get() {
-                return this.purchases.length > 0 && this.purchases.every(item => item.selected);
+                return this.savedItems.length > 0 && this.savedItems.every(item => item.selected);
             },
             set(value) {
-                this.purchases.forEach(item => { item.selected = value; });
+                this.savedItems.forEach(item => { item.selected = value; });
             }
         }
     },
@@ -121,7 +121,7 @@ createApp({
             }
             return `${symbol}${converted}`;
         },
-        savePurchase() {
+        saveItem() {
             // Convert entered price back to USD for storage
             let priceUSD = this.form.price;
             const rate = this.currencyRates[this.selectedCurrency] || 1;
@@ -129,28 +129,28 @@ createApp({
                 priceUSD = this.form.price / rate;
             }
             if (this.editIndex === null) {
-                this.purchases.push({ ...this.form, price: priceUSD });
+                this.savedItems.push({ ...this.form, price: priceUSD });
             } else {
-                this.purchases.splice(this.editIndex, 1, { ...this.form, price: priceUSD });
+                this.savedItems.splice(this.editIndex, 1, { ...this.form, price: priceUSD });
             }
-            this.savePurchases();
+            this.saveItems();
             this.resetForm();
         },
-        editPurchase(item) {
-            const originalIndex = this.purchases.findIndex(p => p === item);
+        editItem(item) {
+            const originalIndex = this.savedItems.findIndex(p => p === item);
             this.editIndex = originalIndex;
             this.form = { ...item, price: this.getConvertedPrice(item.price) };
         },
-        deletePurchase(item) {
-            if (confirm('Delete this purchase?')) {
-                const originalIndex = this.purchases.findIndex(p => p === item);
-                this.purchases.splice(originalIndex, 1);
-                this.savePurchases();
+        deleteItem(item) {
+            if (confirm('Delete this item?')) {
+                const originalIndex = this.savedItems.findIndex(p => p === item);
+                this.savedItems.splice(originalIndex, 1);
+                this.saveItems();
                 this.resetForm();
             }
         },
-        savePurchases() {
-            localStorage.setItem('purchases', JSON.stringify(this.purchases));
+        saveItems() {
+            localStorage.setItem('savedItems', JSON.stringify(this.savedItems));
         },
         resetForm() {
             this.form = { name: '', price: '', quantity: 1, date: '' };
@@ -192,9 +192,9 @@ createApp({
         }
     },
     watch: {
-        purchases: {
+        savedItems: {
             handler(newVal) {
-                this.savePurchases();
+                this.saveItems();
             },
             deep: true
         }
@@ -210,7 +210,7 @@ createApp({
             this.showOverlay = false;
         }
         // Ensure 'selected' property for every item in every order
-        this.purchases.forEach(item => {
+        this.savedItems.forEach(item => {
             if (typeof item.selected === 'undefined') {
                 item.selected = true;
             }

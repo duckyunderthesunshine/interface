@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Best Beauty - My Purchases</title>
+    <title>Best Beauty - Saved Items</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
@@ -64,16 +64,16 @@
                         <h5 class="sidebar-title mb-3">My Account</h5>
                         <ul class="list-unstyled">
                             <li class="mb-2"><a href="account.html" class="text-decoration-none" style="color:#b48ec7;"><i class="fa fa-user me-2"></i>Profile</a></li>
-                            <li class="mb-2"><a href="purchases.html" class="text-decoration-none" style="color:#b48ec7;"><i class="fa fa-shopping-bag me-2"></i>Order History</a></li>
+                            <li class="mb-2"><a href="purchases.html" class="text-decoration-none" style="color:#b48ec7;"><i class="fa fa-shopping-bag me-2"></i>Saved Items</a></li>
                             <li class="mb-2"><a href="#" class="text-decoration-none" style="color:#b48ec7;" @click="logout"><i class="fa fa-sign-out-alt me-2"></i>Logout</a></li>
                         </ul>
                     </div>
                 </aside>
                 <div class="col-lg-9">
                     <div class="login-card p-4 p-md-5 rounded-4 shadow-lg w-100">
-                        <h2 class="text-center mb-4 login-title">My Purchases</h2>
+                        <h2 class="text-center mb-4 login-title">Saved for Purchase</h2>
                         <!-- Add/Edit Purchase Form -->
-                        <form @submit.prevent="savePurchase" class="mb-4">
+                        <form @submit.prevent="saveItem" class="mb-4">
                             <div class="row g-2 align-items-end">
                                 <div class="col-md-4">
                                     <label class="form-label">Product Name</label>
@@ -123,8 +123,8 @@
                                         <tr class="order-header">
                                             <td colspan="6" class="p-3">
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <span>Order on {{ order.date }}</span>
-                                                    <span class="fw-bold">Order Total: {{ formatPrice(order.total) }}</span>
+                                                    <span>Items Added on {{ order.date }}</span>
+                                                    <span class="fw-bold">Subtotal: {{ formatPrice(order.total) }}</span>
                                                 </div>
                                             </td>
                                         </tr>
@@ -137,8 +137,8 @@
                                             <td>{{ item.quantity }}</td>
                                             <td>{{ formatPrice(item.price * item.quantity) }}</td>
                                             <td>
-                                                <button class="btn btn-outline-secondary btn-sm me-2" @click="editPurchase(item)"><i class="fa fa-edit"></i></button>
-                                                <button class="btn btn-outline-danger btn-sm" @click="deletePurchase(item)"><i class="fa fa-trash"></i></button>
+                                                <button class="btn btn-outline-secondary btn-sm me-2" @click="editItem(item)"><i class="fa fa-edit"></i></button>
+                                                <button class="btn btn-outline-danger btn-sm" @click="deleteItem(item)"><i class="fa fa-trash"></i></button>
                                             </td>
                                         </tr>
                                     </template>
@@ -160,7 +160,7 @@
                             </div>
                         </div>
                         <div v-if="purchases.length === 0" class="text-center py-4">
-                            <p>No purchases yet.</p>
+                            <p>You have no saved items.</p>
                         </div>
                         <div class="text-center mt-4">
                             <button class="btn btn-dark proceed-payment-btn">PROCEED TO PAYMENT</button>
