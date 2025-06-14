@@ -29,13 +29,24 @@
                 </div>
             </div>
         </div>
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+            <div id="cartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">Item Added to Cart</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    {{ toastMessage }}
+                </div>
+            </div>
+        </div>
         <!-- Navigation -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
             <div class="container-fluid px-4">
                 <router-link class="navbar-brand" to="/">BEST BEAUTY</router-link>
                 <div class="d-lg-none ms-auto navbar-icons">
                     <router-link :to="isLoggedIn ? '/account' : '/login'" class="icon-btn" title="Account"><i class="fa fa-user"></i></router-link>
-                    <router-link to="/cart" class="icon-link position-relative" title="Cart">
+                    <router-link to="/cart" class="icon-btn position-relative" title="Cart">
                         <i class="fa fa-shopping-bag"></i>
                         <span class="cart-badge">{{ cartCount }}</span>
                     </router-link>
@@ -62,6 +73,8 @@
                 </div>
             </div>
         </nav>
+
+        <router-view></router-view>
 
         <router-view></router-view>
 
