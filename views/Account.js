@@ -98,7 +98,7 @@ const Account = {
             const { error } = await supabase.auth.signOut();
             if (!error) {
                 this.$root.isLoggedIn = false;
-                this.$root.cart = []; // Clear the cart state
+                this.$root.cart = []; 
                 this.$router.push('/');
             }
         }

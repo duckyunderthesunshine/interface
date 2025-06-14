@@ -33,7 +33,6 @@ const app = createApp({
         }
     },
     async created() {
-        // If this is a new browser session and "Remember Me" is not checked, log out.
         if (!sessionStorage.getItem('loggedInThisSession') && !localStorage.getItem('rememberMe')) {
             await supabase.auth.signOut();
             localStorage.removeItem('cart');
@@ -46,7 +45,6 @@ const app = createApp({
             sessionStorage.setItem('loggedInThisSession', 'true');
         }
 
-        // Load cart from localStorage
         const storedCart = localStorage.getItem('cart');
         if (storedCart) {
             try {
@@ -65,7 +63,6 @@ const app = createApp({
         this.updateCartCount();
     },
     mounted() {
-        // Initialize the toast instance once the component is mounted
         const toastEl = document.getElementById('cartToast');
         if (toastEl) {
             this.cartToastInstance = new bootstrap.Toast(toastEl, { delay: 3000 });
@@ -93,7 +90,6 @@ const app = createApp({
             const rate = this.currencyRates[this.selectedCurrency] || 1;
             const symbol = this.currencySymbols[this.selectedCurrency] || '$';
             let converted = price * rate;
-            // For KRW and JPY, show no decimals
             if (this.selectedCurrency === 'KRW' || this.selectedCurrency === 'JPY') {
                 converted = Math.round(converted).toLocaleString('en-US');
             } else {

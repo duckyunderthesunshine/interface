@@ -87,7 +87,7 @@ const Cart = {
         },
         postageFee() {
             if (!this.cart.some(item => item.selected)) return 0;
-            return 5; // Base postage fee in USD
+            return 5; 
         },
         grandTotal() {
             if (!this.cart.some(item => item.selected)) return 0;

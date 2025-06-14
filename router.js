@@ -14,12 +14,10 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    // always scroll to top
     return { top: 0 }
   },
 });
 
-// Navigation Guard - Must be AFTER the createRouter call
 router.beforeEach(async (to, from, next) => {
     const { data } = await supabase.auth.getUser();
     const isLoggedIn = !!data?.user;

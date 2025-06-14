@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Cormorant+Garamond:wght@400;700&display=swap');
 
-/* Global Styles */
 :root {
     --primary-color: #FFB5E8; /* Soft pink */
     --secondary-color: #B5EAD7; /* Mint green */
@@ -18,7 +17,6 @@ body {
     padding-top: 7.5vh;
 }
 
-/* Navigation */
 .navbar {
     box-shadow: 0 2px 15px rgba(255, 181, 232, 0.2);
     background-color: rgba(255, 255, 255, 0.95) !important;
@@ -54,11 +52,10 @@ body {
     color: var(--primary-color) !important;
 }
 
-/* Hero Section */
 .hero-section {
     position: relative;
     overflow: hidden;
-    background-color: #f3e6fa; /* Fallback color */
+    background-color: #f3e6fa; 
 }
 
 .hero-bg-video {
@@ -92,20 +89,16 @@ body {
 .hero-section h1 {
     color: var(--text-color);
     margin-bottom: 1.5rem;
-    font-weight: 900; /* Bolder for more impact */
+    font-weight: 900; 
     text-shadow: 1px 1px 3px rgba(255,255,255,0.4);
 }
 
 .hero-section .lead {
     color: var(--text-color);
     margin-bottom: 2rem;
-    font-size: 1.25rem; /* Slightly larger lead text */
+    font-size: 1.25rem; 
     text-shadow: 1px 1px 2px rgba(255,255,255,0.3);
 }
-
-
-
-/* Featured Products (removed) */
 
 .category-card img {
     height: 350px;
@@ -142,7 +135,6 @@ body {
     background: var(--primary-color);
 }
 
-/* Shop by Category */
 .shop-by-category {
     background-color: var(--light-bg);
     padding: 4rem 0;
@@ -193,7 +185,6 @@ body {
     text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
 }
 
-/* Our Philosophy */
 .our-philosophy {
     background-color: var(--light-bg);
     padding: 4rem 0;
@@ -208,7 +199,6 @@ body {
     color: #6B4E71;
 }
 
-/* Beauty Blog */
 .beauty-blog {
     background-color: var(--light-bg);
     padding: 4rem 0;
@@ -279,7 +269,6 @@ body {
     color: var(--hover-color);
 }
 
-/* Product Card */
 .product-card {
     border: 2px solid var(--hover-color);
     background: #f3e6fa;
@@ -323,7 +312,6 @@ body {
     margin-bottom: 1rem;
 }
 
-/* Buttons */
 .btn {
     padding: 0.5rem 1.5rem;
     font-weight: 500;
@@ -359,7 +347,6 @@ body {
     color: white;
 }
 
-/* Footer Styles */
 .footer {
     background-color: white;
     color: var(--text-color);
@@ -421,7 +408,6 @@ body {
     margin: 2rem 0;
 }
 
-/* Newsletter Input */
 .footer .input-group {
     max-width: 400px;
 }
@@ -441,7 +427,6 @@ body {
     border-radius: 0 25px 25px 0;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .hero-section {
         text-align: center;
@@ -490,7 +475,6 @@ body {
     }
 }
 
-/* Product Page Header */
 .product-page-header {
     position: relative;
     width: 100%;
@@ -526,7 +510,6 @@ body {
     margin-bottom: 0.5rem;
 }
 
-/* Filter Sidebar Styles */
 .filter-sidebar {
     background: #f8f4fa;
     border: 1.5px solid #f3e6fa;
@@ -561,13 +544,12 @@ body {
 
 @media (min-width: 992px) {
     .filter-sidebar {
-        position: -webkit-sticky; /* For Safari */
+        position: -webkit-sticky; 
         position: sticky;
-        top: calc(7.5vh + 2rem); /* Navbar height + spacing */
+        top: calc(7.5vh + 2rem); 
     }
 }
 
-/* Keep body and small text clean and readable */
 .card-text, .form-check-label, .footer, .btn, .navbar-nav .nav-link, .product-card .card-text.small {
     font-family: 'Helvetica Neue', Arial, sans-serif;
 }
@@ -613,7 +595,6 @@ h1, h2, h3, h4, h5, h6, .header-title {
     color: #3d2c3c;
 }
 
-/* Login Page Styles */
 .login-bg {
     background: linear-gradient(120deg, #fff5f5 0%, #f3e6fa 100%);
     min-height: 100vh;
@@ -680,7 +661,6 @@ h1, h2, h3, h4, h5, h6, .header-title {
     border-color: #ffb5e8;
 }
 
-/* Navbar Icon Styles */
 .navbar-icons {
     display: flex;
     align-items: center;
@@ -717,7 +697,6 @@ h1, h2, h3, h4, h5, h6, .header-title {
     box-shadow: 0 2px 6px rgba(255,181,232,0.15);
 }
 
-/* Pagination Styles */
 .pagination {
     --bs-pagination-bg: #fff;
     --bs-pagination-border-color: #f3e6fa;
@@ -761,23 +740,22 @@ h1, h2, h3, h4, h5, h6, .header-title {
     cursor: not-allowed;
 }
 
-/* Purchases Page Grouping */
 .order-header > td {
     background-color: #f8f4fa;
     border-bottom: 2px solid #ffb5e8 !important;
     font-family: 'Playfair Display', 'Cormorant Garamond', serif;
     font-weight: 700;
 }
-/* This makes the first item row in a group connect to its header visually */
+
 .order-header + tr > td {
     border-top: none;
 }
 
 .pastel-select {
-  background: #fff6fa; /* soft pink */
-  border: 2px solid #f7c6e0; /* pastel border */
+  background: #fff6fa; 
+  border: 2px solid #f7c6e0; 
   border-radius: 12px;
-  color: #b85c9e; /* pastel purple-pink text */
+  color: #b85c9e; 
   font-weight: 500;
   box-shadow: 0 2px 8px rgba(247, 198, 224, 0.15);
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -807,9 +785,8 @@ h1, h2, h3, h4, h5, h6, .header-title {
   }
 }
 
-/* Toast Notification Styles */
 .toast {
-    background-color: var(--light-bg); /* Very light pink from theme */
+    background-color: var(--light-bg); 
     border: 1.5px solid var(--border-color);
     border-radius: 12px;
     box-shadow: 0 8px 32px 0 rgba(199, 206, 234, 0.18);
@@ -817,7 +794,7 @@ h1, h2, h3, h4, h5, h6, .header-title {
 }
 
 .toast-header {
-    background-color: #f8eaff; /* Soft lavender from theme */
+    background-color: #f8eaff; 
     color: var(--text-color);
     font-family: 'Playfair Display', 'Cormorant Garamond', serif;
     font-weight: 700;
@@ -846,7 +823,7 @@ h1, h2, h3, h4, h5, h6, .header-title {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 245, 245, 1); /* Use light-bg with opacity */
+    background: rgba(255, 245, 245, 1); 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -858,7 +835,6 @@ h1, h2, h3, h4, h5, h6, .header-title {
     color: var(--primary-color);
 }
 
-/* Purchase Table Checkbox Styles */
 .purchase-checkbox {
     width: 1.3em;
     height: 1.3em;

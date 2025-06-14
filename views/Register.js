@@ -100,7 +100,6 @@ const Register = {
             
                 if (signUpError) throw signUpError;
                 
-                // Now, automatically log the user in
                 const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
                     email: this.email,
                     password: this.password,

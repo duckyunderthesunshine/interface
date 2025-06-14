@@ -81,7 +81,6 @@ const Login = {
                 }
                 sessionStorage.setItem('loggedInThisSession', 'true');
                 
-                // Update shared state in root component
                 this.$root.isLoggedIn = true;
                 
                 this.$router.push('/');
