@@ -270,6 +270,24 @@ createApp({
     },
     
     methods: {
+        // If this is a new browser session and "Remember Me" is not checked, log out.
+        if (!sessionStorage.getItem('loggedInThisSession') && !localStorage.getItem('rememberMe')) {
+            await supabase.auth.signOut();
+            localStorage.removeItem('cart');
+        }
+
+        const { data, error } = await supabase.auth.getUser();
+        if (!data?.user) {
+            window.location.href = 'login.html';
+            return;
+        } else {
+            sessionStorage.setItem('loggedInThisSession', 'true');
+            this.isLoggedIn = true;
+            await this.fetchSavedItems();
+        }
+    },
+    
+    methods: {
         async fetchSavedItems() {
             this.showOverlay = true;
             try {
