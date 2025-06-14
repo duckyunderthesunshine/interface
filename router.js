@@ -6,7 +6,8 @@ const routes = [
   { path: '/login', component: Login, name: 'Login' },
   { path: '/register', component: Register, name: 'Register' },
   { path: '/account', component: Account, name: 'Account', meta: { requiresAuth: true } },
-  // We will add routes for cart & purchases in the next stages
+  { path: '/cart', component: Cart, name: 'Cart', meta: { requiresAuth: true } },
+  { path: '/purchases', component: Purchases, name: 'Purchases', meta: { requiresAuth: true } },
 ];
 
 // Navigation Guard

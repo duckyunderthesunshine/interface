@@ -49,7 +49,13 @@ const app = createApp({
         const storedCart = localStorage.getItem('cart');
         if (storedCart) {
             try {
-                this.cart = JSON.parse(storedCart);
+                const loaded = JSON.parse(storedCart);
+                this.cart = loaded.map(item => {
+                    if (typeof item.selected === 'undefined') {
+                        item.selected = true;
+                    }
+                    return item;
+                });
             } catch(e) {
                 console.error("Error parsing cart from localStorage", e);
                 this.cart = [];
@@ -70,7 +76,7 @@ const app = createApp({
             if (idx !== -1) {
                 this.cart[idx].quantity += 1;
             } else {
-                this.cart.push({ ...product, quantity: 1 });
+                this.cart.push({ ...product, quantity: 1, selected: true });
             }
             this.saveCart();
             this.updateCartCount();
