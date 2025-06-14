@@ -6,10 +6,17 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const { createApp } = Vue;
 createApp({
     async created() {
+        // If this is a new browser session and "Remember Me" is not checked, log out.
+        if (!sessionStorage.getItem('loggedInThisSession') && !localStorage.getItem('rememberMe')) {
+            await supabase.auth.signOut();
+            localStorage.removeItem('cart');
+        }
+
         const { data, error } = await supabase.auth.getUser();
         if (!data?.user) {
             window.location.href = 'login.html';
         } else {
+            sessionStorage.setItem('loggedInThisSession', 'true');
             this.name = data?.user.user_metadata?.name || '';
             this.email = data?.user.email || '';
             this.isLoggedIn = true;
