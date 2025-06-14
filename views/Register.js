@@ -90,15 +90,27 @@ const Register = {
                     this.loading = false; return;
                 }
                 
-                const { data, error } = await supabase.auth.signUp({
+                const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
                     email: this.email,
                     password: this.password,
-                    options: { data: { name: this.name } }
+                    options: { 
+                        data: { name: this.name },
+                    }
                 });
             
-                if (error) throw error;
-                alert('Registration successful! Please check your email to confirm your account.');
-                this.$router.push('/login');
+                if (signUpError) throw signUpError;
+                
+                // Now, automatically log the user in
+                const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+                    email: this.email,
+                    password: this.password,
+                });
+
+                if (signInError) throw signInError;
+
+                sessionStorage.setItem('loggedInThisSession', 'true');
+                this.$root.isLoggedIn = true;
+                this.$router.push('/');
             } catch (error) {
                 this.error = error.message;
             } finally {
