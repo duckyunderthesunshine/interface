@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Vue Router -->
+    <script src="https://unpkg.com/vue-router@4"></script>
 </head>
 <body>
     <div id="app">
@@ -157,6 +159,8 @@
             </div>
         </section>
 
+        <router-view></router-view>
+
         <!-- Footer -->
         <footer class="footer mt-5 py-5">
             <div class="container">
@@ -215,19 +219,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Custom JS -->
+    <!-- View Components -->
+    <script src="views/Home.js"></script>
+    <!-- Router -->
+    <script src="router.js"></script>
+    <!-- Main Vue App -->
     <script src="app.js"></script>
-    <script>
-    // Cart badge updater for non-Vue pages
-    function updateCartBadge() {
-        let cart = [];
-        try {
-            cart = JSON.parse(localStorage.getItem('cart')) || [];
-        } catch (e) {}
-        const count = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
-        document.querySelectorAll('.cart-badge').forEach(badge => badge.textContent = count);
-    }
-    updateCartBadge();
-    </script>
 </body>
 </html> 
