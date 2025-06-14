@@ -80,11 +80,13 @@ const Products = {
             </section>
         </div>
     `,
+    // Component state (reactive data)
     data() {
         return {
-            sortOption: 'newest',
-            selectedCategory: 'All',
-            categories: ['All', 'Face', 'Eyes', 'Lips', 'Body', 'Hair'],
+            sortOption: 'newest',           // Current sort option
+            selectedCategory: 'All',        // Currently selected category
+            categories: ['All', 'Face', 'Eyes', 'Lips', 'Body', 'Hair'], // List of categories
+            // Array of all products (JSON data)
             allProducts: [
                 { id: 1, name: "Luminous Foundation", price: 45.00, image: "resources/luminous_foundation.png", description: "A lightweight, buildable foundation for a radiant, flawless finish.", category: "Face" },
                 { id: 2, name: "Velvet Matte Lipstick", price: 28.00, image: "resources/velvet_matte_lipstick_2.png", description: "Long-lasting, hydrating lipstick with a soft matte finish.", category: "Lips" },
@@ -99,21 +101,25 @@ const Products = {
                 { id: 11, name: "Pastel Shine Hair Serum", price: 20.00, image: "resources/pastel_shine_hair_serum.png", description: "Lightweight serum for silky, shiny, frizz-free pastel-perfect hair.", category: "Hair" },
                 { id: 12, name: "Mermaid Shimmer Body Oil", price: 36.00, image: "resources/mermaid_shimmer_body_oil.png", description: "Lightweight, sparkling body oil for a luminous, beachy glow.", category: "Body" }
             ],
-            searchQuery: '',
-            currentPage: 1,
-            productsPerPage: 6,
+            searchQuery: '',                // Search input value
+            currentPage: 1,                 // Current page for pagination
+            productsPerPage: 6,             // Number of products per page
         }
     },
     computed: {
+        // Returns products sorted and filtered by category, search, and sort option
         sortedProducts() {
             let products = [...this.allProducts];
+            // Filter by selected category
             if (this.selectedCategory && this.selectedCategory !== 'All') {
                 products = products.filter(p => p.category === this.selectedCategory);
             }
+            // Filter by search query
             if (this.searchQuery.trim() !== '') {
                 const q = this.searchQuery.trim().toLowerCase();
                 products = products.filter(p => p.name.toLowerCase().includes(q) || (p.description && p.description.toLowerCase().includes(q)));
             }
+            // Sort products based on selected sort option
             switch (this.sortOption) {
                 case 'priceLow': products.sort((a, b) => a.price - b.price); break;
                 case 'priceHigh': products.sort((a, b) => b.price - a.price); break;
@@ -123,18 +129,22 @@ const Products = {
             }
             return products;
         },
+        // Returns only the products for the current page
         paginatedProducts() {
             const start = (this.currentPage - 1) * this.productsPerPage;
             return this.sortedProducts.slice(start, start + this.productsPerPage);
         },
+        // Calculates the total number of pages for pagination
         totalPages() {
             return Math.ceil(this.sortedProducts.length / this.productsPerPage) || 1;
         }
     },
+    // Lifecycle hook: set category from route query on creation
     created() {
         this.updateCategoryFromRoute(this.$route);
     },
     methods: {
+        // Update selected category from route query (for deep linking)
         updateCategoryFromRoute(route) {
             const category = route.query.category;
             if (category && this.categories.includes(category)) {
@@ -143,30 +153,37 @@ const Products = {
                 this.selectedCategory = 'All';
             }
         },
+        // Format price using root app's currency formatting
         formatPrice(price) {
             return this.$root.formatPrice(price);
         },
+        // Reset to first page when searching
         searchProducts() {
             this.currentPage = 1;
         },
+        // Add product to cart, with login check
         addToCart(product) {
             if (!this.$root.isLoggedIn) {
                 alert('Please log in to add items to your cart.');
                 this.$router.push('/login');
                 return;
             }
+            // Store selected currency in localStorage
             localStorage.setItem('selectedCurrency', this.$root.selectedCurrency);
             this.$root.addToCart(product);
         },
+        // Go to a specific page in pagination
         goToPage(page) {
             if (page < 1 || page > this.totalPages) return;
             this.currentPage = page;
         }
     },
     watch: {
+        // Reset to first page when filters change
         selectedCategory() { this.currentPage = 1; },
         searchQuery() { this.currentPage = 1; },
         sortOption() { this.currentPage = 1; },
+        // Watch for route changes to update category
         '$route'(to, from) {
             this.updateCategoryFromRoute(to);
         }

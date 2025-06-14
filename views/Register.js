@@ -54,42 +54,48 @@ const Register = {
             </div>
         </div>
     `,
+    // Component state (reactive data)
     data() {
         return {
-            name: '',
-            email: '',
-            password: '',
-            confirmPassword: '',
-            showPassword: false,
-            agreeTerms: false,
-            loading: false,
-            error: null
+            name: '',                // User's name input
+            email: '',               // User's email input
+            password: '',            // User's password input
+            confirmPassword: '',     // User's confirm password input
+            showPassword: false,     // Toggle for password visibility
+            agreeTerms: false,       // Terms and conditions checkbox state
+            loading: false,          // Indicates if registration is in progress
+            error: null              // Error message for form feedback
         }
     },
+    // Lifecycle hook: redirect if already logged in
     created() {
         if (this.$root.isLoggedIn) {
             this.$router.push('/account');
         }
     },
     methods: {
+        // Register method: validates input and creates a new user with Supabase
         async register() {
             this.loading = true;
             this.error = null;
             try {
+                // Validate email format
                 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailPattern.test(this.email)) {
                     this.error = 'Please enter a valid email address.';
                     this.loading = false; return;
                 }
+                // Check if passwords match
                 if (this.password !== this.confirmPassword) {
                     this.error = 'Passwords do not match!';
                     this.loading = false; return;
                 }
+                // Check if terms are agreed
                 if (!this.agreeTerms) {
                     this.error = 'You must agree to the terms and conditions.';
                     this.loading = false; return;
                 }
-                
+                // Create user in Supabase Auth
                 const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
                     email: this.email,
                     password: this.password,
@@ -97,20 +103,19 @@ const Register = {
                         data: { name: this.name },
                     }
                 });
-            
                 if (signUpError) throw signUpError;
-                
+                // Automatically log the user in after registration
                 const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
                     email: this.email,
                     password: this.password,
                 });
-
                 if (signInError) throw signInError;
-
+                // Mark session as logged in and redirect
                 sessionStorage.setItem('loggedInThisSession', 'true');
                 this.$root.isLoggedIn = true;
                 this.$router.push('/');
             } catch (error) {
+                // Show error message if registration fails
                 this.error = error.message;
             } finally {
                 this.loading = false;

@@ -47,26 +47,30 @@ const Login = {
             </div>
         </div>
     `,
+    // Component state (reactive data)
     data() {
         return {
-            email: '',
-            password: '',
-            showPassword: false,
-            rememberMe: false,
-            loading: false,
-            error: null,
+            email: '',           // User's email input
+            password: '',        // User's password input
+            showPassword: false, // Toggle for password visibility
+            rememberMe: false,   // Remember me checkbox state
+            loading: false,      // Indicates if login is in progress
+            error: null,         // Error message for form feedback
         }
     },
+    // Lifecycle hook: redirect if already logged in
     created() {
         if (this.$root.isLoggedIn) {
             this.$router.push('/account');
         }
     },
     methods: {
+        // Login method: authenticates user with Supabase
         async login() {
             this.loading = true;
             this.error = null;
             try {
+                // Attempt to sign in with Supabase Auth
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email: this.email,
                     password: this.password
@@ -74,17 +78,22 @@ const Login = {
 
                 if (error) throw error;
 
+                // Store 'rememberMe' preference in localStorage
                 if (this.rememberMe) {
                     localStorage.setItem('rememberMe', 'true');
                 } else {
                     localStorage.removeItem('rememberMe');
                 }
+                // Mark session as logged in
                 sessionStorage.setItem('loggedInThisSession', 'true');
                 
+                // Update root state to reflect login
                 this.$root.isLoggedIn = true;
                 
+                // Redirect to home page
                 this.$router.push('/');
             } catch (error) {
+                // Show error message if login fails
                 this.error = error.message;
             } finally {
                 this.loading = false;

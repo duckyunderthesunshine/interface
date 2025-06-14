@@ -97,8 +97,10 @@ const Home = {
             </section>
         </div>
     `,
+    // Component state (reactive data)
     data() {
         return {
+            // Array of featured blog posts for the blog section
             blogPosts: [
                  {
                     id: 1,

@@ -72,27 +72,33 @@ const Cart = {
             </div>
         </div>
     `,
+    // Component state (reactive data)
     data() {
         return {
-            showOverlay: false
+            showOverlay: false // Controls loading spinner for purchase action
         }
     },
     computed: {
+        // Cart array is synced with root app state
         cart: {
             get() { return this.$root.cart; },
             set(value) { this.$root.cart = value; }
         },
+        // Calculate subtotal for selected items
         cartTotal() {
             return this.cart.filter(item => item.selected).reduce((sum, item) => sum + item.price * item.quantity, 0);
         },
+        // Calculate postage fee (only if at least one item is selected)
         postageFee() {
             if (!this.cart.some(item => item.selected)) return 0;
             return 5; 
         },
+        // Calculate grand total (subtotal + postage)
         grandTotal() {
             if (!this.cart.some(item => item.selected)) return 0;
             return this.cartTotal + this.postageFee;
         },
+        // Select/deselect all items in the cart
         allSelected: {
             get() {
                 return this.cart.length > 0 && this.cart.every(item => item.selected);
@@ -103,9 +109,11 @@ const Cart = {
         }
     },
     methods: {
+        // Format price using root app's currency formatting
         formatPrice(price) {
             return this.$root.formatPrice(price);
         },
+        // Update item quantity (increment, decrement, or set directly)
         updateQuantity(item, change) {
             item.quantity += change;
             if (item.quantity < 1) {
@@ -113,10 +121,12 @@ const Cart = {
             }
             this.saveCart();
         },
+        // Remove item from cart by index
         removeItem(idx) {
             this.cart.splice(idx, 1);
             this.saveCart();
         },
+        // Save cart to localStorage via root app method
         saveCart() {
             this.$root.saveCart();
         },

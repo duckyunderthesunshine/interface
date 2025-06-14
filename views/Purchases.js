@@ -120,12 +120,14 @@ const Purchases = {
             </div>
         </div>
     `,
+    // Component state (reactive data)
     data() {
         return {
-            showOverlay: true,
-            savedItems: [],
-            form: { id: null, product_id: null, name: '', price: '', quantity: 1, date: '', image: '', description: '', category: '', order_id: null },
-            editIndex: null,
+            showOverlay: true,   // Controls loading overlay visibility
+            savedItems: [],      // Array of saved purchase items
+            form: { id: null, product_id: null, name: '', price: '', quantity: 1, date: '', image: '', description: '', category: '', order_id: null }, // Form data
+            editIndex: null,     // Index/id of item being edited
+            // List of all available products for autocomplete
             allProducts: [
                 { id: 1, name: "Luminous Foundation", price: 45.00, image: "resources/luminous_foundation.png", description: "A lightweight, buildable foundation for a radiant, flawless finish.", category: "Face" },
                 { id: 2, name: "Velvet Matte Lipstick", price: 28.00, image: "resources/velvet_matte_lipstick_2.png", description: "Long-lasting, hydrating lipstick with a soft matte finish.", category: "Lips" },
@@ -140,11 +142,12 @@ const Purchases = {
                 { id: 11, name: "Pastel Shine Hair Serum", price: 20.00, image: "resources/pastel_shine_hair_serum.png", description: "Lightweight serum for silky, shiny, frizz-free pastel-perfect hair.", category: "Hair" },
                 { id: 12, name: "Mermaid Shimmer Body Oil", price: 36.00, image: "resources/mermaid_shimmer_body_oil.png", description: "Lightweight, sparkling body oil for a luminous, beachy glow.", category: "Body" }
             ],
-            filteredProducts: [],
-            showProductDropdown: false
+            filteredProducts: [], // Filtered products for autocomplete
+            showProductDropdown: false // Controls product dropdown visibility
         }
     },
     computed: {
+        // Group saved items by order_id/date for display
         groupedItems() {
             const allItems = this.savedItems || [];
             const grouped = allItems.reduce((acc, p) => {
@@ -161,22 +164,28 @@ const Purchases = {
                 acc[orderId].total += (p.price || 0) * (p.quantity || 0);
                 return acc;
             }, {});
+            // Sort orders by date (newest first)
             return Object.values(grouped).sort((a, b) => new Date(b.date) - new Date(a.date));
         },
+        // List of selected items (checked)
         selectedItems() {
             return this.savedItems.filter(item => item.selected);
         },
+        // Subtotal for selected items
         selectedSubtotal() {
             return this.selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         },
+        // Shipping fee for selected items
         selectedShipping() {
             if (this.selectedItems.length === 0) return 0;
             return 5;
         },
+        // Grand total for selected items
         selectedGrandTotal() {
             if (this.selectedItems.length === 0) return 0;
             return this.selectedSubtotal + this.selectedShipping;
         },
+        // Select/deselect all items
         allSelected: {
             get() {
                 return this.savedItems.length > 0 && this.savedItems.every(item => item.selected);
@@ -186,13 +195,16 @@ const Purchases = {
             }
         }
     },
+    // Fetch saved items when component is created
     async created() {
         await this.fetchSavedItems();
     },
     methods: {
+        // Format price using root app's currency formatting
         formatPrice(price) {
             return this.$root.formatPrice(price);
         },
+        // Fetch saved items from Supabase
         async fetchSavedItems() {
             this.showOverlay = true;
             try {
@@ -213,6 +225,7 @@ const Purchases = {
                 this.showOverlay = false;
             }
         },
+        // Delete an item from saved purchases
         async deleteItem(item) {
             if (confirm('Are you sure you want to permanently delete this item? This cannot be undone.')) {
                 try {
@@ -225,6 +238,7 @@ const Purchases = {
                 }
             }
         },
+        // Convert price to selected currency (if needed)
         getConvertedPrice(priceUSD) {
             if (!priceUSD && priceUSD !== 0) return '';
             const rate = this.$root.currencyRates[this.$root.selectedCurrency] || 1;
@@ -234,6 +248,7 @@ const Purchases = {
             }
             return Number(converted.toFixed(2));
         },
+        // Save (add or update) a purchase item
         async saveItem() {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
@@ -268,15 +283,18 @@ const Purchases = {
                 alert('Failed to save item.');
             }
         },
+        // Edit an item (populate form for editing)
         editItem(item) {
             this.editIndex = item.id;
             this.form = { ...item, price: this.getConvertedPrice(item.price) };
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
+        // Reset the add/edit form
         resetForm() {
             this.form = { id: null, product_id: null, name: '', price: '', quantity: 1, date: '', image: '', description: '', category: '', order_id: null };
             this.editIndex = null;
         },
+        // Filter products for autocomplete dropdown
         filterProducts() {
             const query = this.form.name.trim().toLowerCase();
             if (!query) {
@@ -289,6 +307,7 @@ const Purchases = {
             );
             this.showProductDropdown = this.filteredProducts.length > 0;
         },
+        // Select a product from the autocomplete dropdown
         selectProduct(product) {
             this.form = {
                 ...this.form, product_id: product.id, name: product.name,
@@ -297,6 +316,7 @@ const Purchases = {
             };
             this.showProductDropdown = false;
         },
+        // Logout the user and clear local/session storage
         async logout() {
             localStorage.removeItem('rememberMe');
             localStorage.removeItem('cart');

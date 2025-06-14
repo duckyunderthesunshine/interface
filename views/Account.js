@@ -50,53 +50,65 @@ const Account = {
         </div>
     </div>
     `,
+    // Component state (reactive data)
     data() {
         return {
-            showOverlay: true,
-            name: '',
-            email: '',
-            password: '',
-            showPassword: false,
-            loading: false,
-            error: null,
+            showOverlay: true,   // Controls loading overlay visibility
+            name: '',            // User's name
+            email: '',           // User's email (read-only)
+            password: '',        // New password (optional)
+            showPassword: false, // Toggle for password visibility
+            loading: false,      // Indicates if save is in progress
+            error: null,         // Error message for form feedback
         }
     },
+    // Lifecycle hook: fetch user data when component is created
     async created() {
+        // Get current user from Supabase
         const { data, error } = await supabase.auth.getUser();
         if (error || !data?.user) {
+            // If not logged in, redirect to login page
             this.$router.push('/login');
         } else {
+            // Populate form fields with user data
             this.name = data.user.user_metadata?.name || '';
             this.email = data.user.email || '';
-            this.showOverlay = false;
+            this.showOverlay = false; // Hide loading overlay
         }
     },
     methods: {
+        // Save profile changes (name and/or password)
         async saveProfile() {
             this.loading = true;
             this.error = null;
             try {
+                // Prepare update payload
                 const updates = {
                     data: { name: this.name },
+                    // Only include password if user entered a new one
                     ...(this.password && { password: this.password })
                 };
 
+                // Update user in Supabase
                 const { error } = await supabase.auth.updateUser(updates);
                 if (error) throw error;
                 alert('Profile updated!');
-                this.password = '';
+                this.password = ''; // Clear password field after update
             } catch (error) {
+                // Show error message if update fails
                 this.error = error.message;
             } finally {
                 this.loading = false;
             }
         },
+        // Logout the user and clear local/session storage
         async logout() {
             localStorage.removeItem('rememberMe');
             localStorage.removeItem('cart');
             sessionStorage.removeItem('loggedInThisSession');
             const { error } = await supabase.auth.signOut();
             if (!error) {
+                // Update root state and redirect to home
                 this.$root.isLoggedIn = false;
                 this.$root.cart = []; 
                 this.$router.push('/');
