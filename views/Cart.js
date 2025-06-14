@@ -159,12 +159,4 @@ const Cart = {
             }
         }
     },
-     watch: {
-        'cart': {
-            handler() {
-                this.saveCart();
-            },
-            deep: true
-        }
-    }
 };
