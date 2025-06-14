@@ -295,3 +295,5 @@ const Products = {
         sortOption() { this.currentPage = 1; }
     }
 });
+
+app.mount('#app'); 
